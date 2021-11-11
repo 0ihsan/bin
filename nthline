@@ -1,0 +1,5 @@
+#!/bin/sh
+
+n=$1
+filename=$2
+awk "++n == $n; !NF {n = 0}" < "$filename"

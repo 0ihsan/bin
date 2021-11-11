@@ -1,0 +1,78 @@
+#!/bin/sh
+#          ╭──────────────────osxphotos-originals──────────────────╮
+#          Maintainer:     ihsan, ihsanl[at]pm[dot]me              │
+#          Description:    {echo,mv,rm} original files exported by │
+#          │               osxphotos if there is an edited version │
+#          First Appeared: 2020 Sep 06 14:24:01UTC, @1599402241    │
+#          License:        MIT                                     │
+#          ╰───────────────────────────────────────────────────────╯
+
+usage() {
+echo '
+	'$(basename $0)' -i <path/to/exported> [-s <suffix> ] [ -d ] [ -o ] [ -h ]
+
+	Description
+	This script can {prints,moves,deletes} the original photosthat has an edited
+	version exported using [osxphotos](https://github.com/RhetTbull/osxphotos/)
+	software. You can run this script to remove originals after exporting with
+	osxphotos.
+
+	-i <exported/dir> Optional. Input dir / exported photos that includes
+	                  original and edited photos. In other words, the directory
+	                  that osxphotos exported to. Default path is the current
+	                  directory.
+
+	-o <path/to/dir>  Optional. Move the original photos to <path/to/dir> if
+	                  there is an edited version. Default value is
+	                  "'$destination'".
+
+	-s <suffix>       Optional. Suffix for edited photos. Default value is
+	                  "'$suffix'".
+
+	-d                Optional. Delete the original photos if there is an edited
+	                  version.'
+}
+
+# defaults
+move=false
+exportdir=.
+delete=false
+suffix='_edited'
+destination=/tmp/original-files
+while getopts :hdi:s:o: args; do
+	case $args in
+		(d) delete=true;;
+		(i) exportdir="$OPTARG";;
+		(s) suffix="$OPTARG";;
+		(o) move=true; destination="$OPTARG"; mkdir -p "$destination";;
+		(h) usage; exit 0;;
+		([?]) usage; exit 1;;
+	esac
+done
+
+main() {
+	findedited |
+		sed "s/$suffix\..*/\.*/g" |
+		findoriginal |
+		action
+}
+
+findedited() { find "$exportdir" -type f -name "*$suffix\.*"; }
+findoriginal() {
+	while read line; do find "$exportdir" -type f -path "${line}"; done;
+}
+action() {
+	while read originalfile; do
+		if $move; then
+			echo "$originalfile -> $destination";
+			mv "$originalfile" $destination;
+		elif $delete; then
+			echo "rm -rf $originalfile";
+			rm -rf "$originalfile";
+		else
+			echo "will be run: \`{rm -rf, mv} $originalfile -> $destination\`";
+		fi
+	done
+}
+
+main

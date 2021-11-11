@@ -1,0 +1,28 @@
+#!/bin/sh
+
+chars='---'
+usage() {
+	commandline='front-matter [ --yaml | --toml ]';
+	>&2 printf "usage:\n\t\033[33m%s\033[0m\n" "$commandline";
+}; case $1 in
+	(-h|--help|help) usage; exit 0;;
+	(-t|--toml) chars='+++';;
+esac
+
+fm() {
+	grep --byte-offset -e "^$chars$" "$1" | head -n 2|cut -f1 -d:|tr '\n' '\t'|
+		while IFS=$(printf "\t") read -r start end; do
+			echo hell
+			dd if="$1" ibs=1 skip="$start" count=$(("$end" - "$start"))
+		done
+}
+
+if [ -n "$1" ]; then
+	for file in "$@"; do
+		fm "$file"
+	done
+else
+	while read -r file; do
+		fm "$file"
+	done
+fi

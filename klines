@@ -1,0 +1,29 @@
+#!/usr/bin/env python3
+
+import sys
+
+argv = sys.argv
+exit = sys.exit
+
+if '-h' in argv or '--help' in argv or argv[1] == "help":
+
+    print('klines - get candlestick data from binance')
+    print('\n\033[33mUSAGE\033[0m')
+    print('    klines [ <symbol> ] [ <interval> ] [ <output_limit> ]')
+    print('\n\033[33mEXAMPLE\033[0m')
+    print('    klines btcusdt 1h 200')
+    print('\n\033[33mOUTPUT FORMAT (tsv)\033[0m')
+    print('    <timestamp_milli>','<open>', '<high>', '<low>', '<close>',
+          sep='\t')
+
+else:
+
+    from binance.client import Client
+
+    c = Client()
+    symbol = 'BTCUSDT' if len(argv) <= 1 else argv[1].upper()
+    interval = '1h' if len(argv) < 2 else argv[2]
+    limit = 500 if len(argv) < 3 else argv[3]
+    response_list = c.get_klines(symbol=symbol, interval=interval, limit=limit)
+    for candle in response_list:
+        print(candle[0], candle[1], candle[2], candle[3], candle[4], sep='\t')

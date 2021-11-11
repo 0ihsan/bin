@@ -1,0 +1,53 @@
+#!/bin/sh
+
+ESC=$(printf '\033')
+GREEN="${ESC}[32m";
+YELLOW="${ESC}[33m";
+RESET="${ESC}[0m";
+INDENT="   ";
+usage() {
+	>&2 printf "%bUSAGE:%b\n\n%s" "${YELLOW}" "${RESET}" "${INDENT}";
+	>&2 printf "%b DATAFILE\n\n" "$(basename "$0")";
+	>&2 printf "%bFLAGS:%b\n" "${YELLOW}" "${RESET}";
+	sed -n '/case $[A-z0-9]* in/,$p' "$0" |
+	   grep '\s\+(\-\|(\--' |
+		sed "s/^\t* */${INDENT}/g;/(\*)/d;s/\t/${INDENT}/g;s/ #\([^#]*\)/\1/g" |
+		sed "s/|/$RESET, $GREEN/g;s/(/$GREEN/g;s/)/$RESET/g"
+	>&2 printf "\n%bSUBCOMMANDS:%b\n" "${YELLOW}" "${RESET}";
+	sed -n '/case $[A-z0-9]* in/,$p' "$0" |
+	   grep '\s\+([^)]*)' | grep -v '(\-' |
+		sed "/(\*)/d;s/\t/${INDENT}/g" |
+		sed "s/#\([^#]*\)/\1/g;s/(/$GREEN/g;s/)/$RESET/g"
+}
+
+case $1 in
+	(-h|--help)    # show this screen
+		usage; exit 0;;
+	(*)
+		if [ -f "$1" ]; then
+			window=50;
+			FILE=$1;
+		else
+			usage; exit 1;
+		fi
+esac
+
+case $2 in
+	(-w|--window)  # set lookback window
+		window="$3"
+		;;
+esac
+counter="$window";
+
+
+if [ -d render/dat ]; then
+	echo directory "render/dat" already exists
+	exit 1;
+else
+	mkdir -p render/dat
+	while [ "$counter" -ne "$(($(wc -l "$FILE" | cut -d' ' -f1) - window))" ]; do
+		head -n "$counter" "$FILE" > "render/dat/$(echo 00000$((counter - window)) | tail -c 5)".dat
+		counter=$((counter+1))
+		echo counter: $counter
+	done
+fi

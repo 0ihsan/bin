@@ -1,0 +1,56 @@
+#!/usr/bin/env lua
+
+-- Check for valid instrument
+if not instrument then
+    print("The following error message informs you that the Creator Tools are not "..
+          "focused on a Kontakt instrument. To solve this, load an instrument in "..
+          "Kontakt and select it from the instrument dropdown menu on top.")
+    return
+end
+
+print('<?xml version="1.0" encoding="UTF-8"?>')
+print("<!-- DS file for Kontakt 6 instrument " .. instrument.name .. " -->")
+print('<DecentSampler pluginVersion="1">')
+print('  <groups>')
+
+local count = 0
+
+for i,g in pairs(instrument.groups) do
+  local vol = g.volume
+  if vol < -144 then
+    vol = -144
+  end
+  print("    <group name=\"" .. g.name .. "\" volume=\"" .. vol .. "dB\" tuning=\"" .. g.tune .. "\" ampVelTrack=\"1\">")
+
+  for n,z in pairs(g.zones) do
+
+        local regionText = "      <sample path=\"Samples/" .. filesystem.filename(z.file) .. 
+            "\" volume=\"" .. z.volume .. 
+            "dB\" tuning=\"" .. string.format("%.2f",z.tune) ..
+            "\" rootNote=\"" .. z.rootKey ..
+            "\" start=\"" .. z.sampleStart ..
+            "\" end=\"" .. z.sampleEnd ..
+            "\" loNote=\"" .. z.keyRange.low ..
+            "\" hiNote=\"" .. z.keyRange.high ..
+            "\" loVel=\"" .. z.velocityRange.low ..
+            "\" hiVel=\"" .. z.velocityRange.high .. "\""
+
+	    if z.loops[0].mode == 0 then
+
+	    else
+            regionText = regionText .. " loopEnabled=\"true\""
+	        local loopEnd = z.loops[0].start + z.loops[0].length - 1
+		    regionText = regionText .. " loopStart=\"" .. z.loops[0].start .. "\" loopEnd=\"" .. loopEnd .. "\" loopCrossfade=\"" .. z.loops[0].xfade .. "\""
+	    end	
+
+      regionText = regionText .. " />"
+
+	     print(regionText)
+         
+            count = count + 1
+
+        end
+  print("    </group>")
+end
+  print("  </groups>")
+  print("</DecentSampler>")

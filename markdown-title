@@ -1,0 +1,13 @@
+#!/bin/sh
+
+# shellcheck disable=SC2016
+
+if [ -n "$1" ]; then
+	rg -o '^# (.*)' -r '$1' "$@" | cut -d: -f2-
+else
+	while read -r filename; do
+		title=$(rg -o '^# (.*)' -r '$1' "$filename" | cut -d: -f2-)
+		echo "$title"
+	done
+fi
+

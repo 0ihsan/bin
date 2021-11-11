@@ -1,0 +1,137 @@
+#!/bin/sh
+
+# =============================================================================
+# File:        tts
+# Description: text to speach in action
+# Author:      ihsan <ihsanl at pm dot me>
+# Created At:  1589476964
+# License:     MIT License
+# =============================================================================
+
+# TODO @1589476985: Random function is not working.
+
+url_api="http://0.0.0.0:5002"
+
+# funcs {{{1
+
+usage() { echo "$0: usage: [ -f <input_file> ]"; }
+
+is_cached() { #1:text #2:file_cache
+	grep "$1" "$2" | cut -f1
+}
+
+get_synthesized() { #1:text #2:url_api #3:path_output
+	curl -so "$3" "$2/api/tts?text=$1"
+}
+
+run_tts_server_if_needed() { #1:url_api
+	curl -sSf "$1" > /dev/null || nohup python3 -m TTS.server.server &
+}
+
+save_index() { #1:text #2:filename #3:file_output
+	printf "%s\t%s\n" "$2" "$1" >> "$3"
+}
+
+increase_filename() { #1:dir #2:extension
+	echo "$(find "$1" -d 1 -name "*.$2" | wc -l | sed 's/[ \t]//g').$2"
+}
+
+increase_filename_using_index() { #1:index #2:extension
+	# file should format should look like this:
+	#
+	# 1.wav	content is content.
+	# 2.wav	content is content.
+	# ...
+	echo "$(($(tail -1 "$1" | grep -o '^[0-9]*') + 1)).$2"
+}
+
+synthesize_and_cache() { #1:text #2:dir_cache
+	text_param="$(echo "$1" | tr ' ' '+')";
+	filename=$(increase_filename_using_index "$2/index.txt" 'wav')
+	save_index "$1" "$filename" "$file_index"
+	get_synthesized "$text_param" "$url_api" "$2/synthesized.d/$filename"
+}
+
+get_cached() { #1:id #2:file_index
+	[ -f "$file_index" ] && cut -f1 < "$2" | grep -q "^$1.wav$"
+}
+
+delete_cached() { #1:id #2:dir_cache
+	if get_cached "$1" "$2/index.txt"; then
+		rm -f "$2/synthesized.d/$1.wav"
+		sed -i'' '/^'"$1"'.wav/d' "$2/index.txt"
+	else
+		return 1
+	fi
+}
+
+nthline() { #1:n #2:file
+	n=$1; awk "++n == $n; !NF {n = 0}" < "$2"
+}
+
+linecount() { #1:file
+	wc -l "$file_index"|grep -o '^[0-9]\+'
+}
+
+play_cached() { #1:id #2:dir_cache
+	grep "^$1" "$2/index.txt" | cut -f2
+	[ -f "$2/synthesized.d/$1.wav" ] && afplay "$2/synthesized.d/$1.wav"
+}
+
+random_between() { #1:from_number #2:to_number
+	bignum=$(perl -MTime::HiRes=time -e 'printf "%.9f\n", time' | tr -d '.')
+	echo $(( $bignum % ($2 - $1) + $1 ))
+}
+
+play_random() { #1:dir_cache
+	randomline=$(random_between "0" "$(linecount "$file_index")")
+	randomindex=$(nthline "$randomline" "$dir_cache/index.txt"|cut -f1|sed '/.wav//')
+	play_cached "$randomindex" "$1"
+}
+
+# }}}
+
+dir_cache="${HOME}/Library/Application Support/tts"
+dir_wav="$dir_cache/synthesized.d"
+file_index="$dir_cache/index.txt"
+
+mkdir -p "$dir_wav"
+run_tts_server_if_needed $url_api
+
+while getopts :hrp:f:d: args; do
+	case $args in
+		(d) delete_cached "$OPTARG" "$dir_cache"; exit $?;;
+		(p) play_cached "$OPTARG" "$dir_cache"; exit $?;;
+		(r) play_random "$dir_cache"; exit $?;;
+		(f) file_input="$OPTARG";;
+		(h) usage;;
+		(*) ;;
+	esac
+done
+
+if [ -f "$file_input" ]; then
+	line=$(tr '\n' ' ' < "$file_input")
+	echo "$line"
+	cache=$(is_cached "$line" "$file_index")
+	if [ "$cache" = "" ]; then
+		cache=$(increase_filename_using_index "$file_index" 'wav')
+		synthesize_and_cache "$line" "$dir_cache";
+	fi
+	afplay "$dir_wav/$cache" || {
+		synthesize_and_cache "$line" "$dir_cache";
+		afplay "$dir_wav/$cache"
+	}
+else
+	while read -r line; do
+		echo "$line"
+		cache=$(is_cached "$line" "$file_index")
+		if [ "$cache" = "" ]; then
+			cache=$(increase_filename_using_index "$file_index" 'wav')
+			synthesize_and_cache "$line" "$dir_cache";
+		fi
+		afplay "$dir_wav/$cache" || {
+			synthesize_and_cache "$line" "$dir_cache";
+			afplay "$dir_wav/$cache"
+		}
+	done
+fi

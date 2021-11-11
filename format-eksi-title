@@ -1,0 +1,23 @@
+#!/usr/bin/env python
+"""
+format-eksi-title - pretty print an one eksi title per line from html input
+
+license: MIT
+"""
+
+import sys
+from bs4 import BeautifulSoup
+YELLOW = "\033[33m"
+RESET  = "\033[00m"
+for title in sys.stdin.readlines():
+
+    title = BeautifulSoup(title, 'html.parser')
+    rate  = title.find("small").text.strip()
+    link  = title.find("a").get('href').strip()[1:].replace('?a=popular', '')
+
+    print(f'[{YELLOW}{rate}{RESET}] {link}')
+
+    # print(f'[{YELLOW}', end='', file=sys.stderr)
+    # print(rate,         end='', file=sys.stdout)
+    # print(f'{RESET}]',  end='', file=sys.stderr)
+    # print(f'\t{link}',  file=sys.stdout)

@@ -1,0 +1,5 @@
+#!/bin/sh
+while read -r line; do
+	phrases="$(echo "$line" | tr ' ' '-')"
+	open "https://eksisozluk.com/$phrases"
+done

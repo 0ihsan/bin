@@ -1,0 +1,6 @@
+#!/usr/bin/osascript
+
+tell application "Safari"
+	make new document with properties {URL:"http://music.youtube.com"}
+	activate
+end tell

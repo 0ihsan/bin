@@ -1,0 +1,7 @@
+#!/bin/sh
+
+# deps: xmenu
+
+ls ~/Applications {/System,}/Applications/{,Utilities} |
+	grep .app | sd '\.app' '' | sortlength | xmenu | sed '/^\s*$/d' |
+	xargs -I_ open -a '_'

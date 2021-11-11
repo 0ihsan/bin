@@ -1,0 +1,25 @@
+#!/bin/sh
+
+if [ -n "$1" ]; then
+	case "$1" in
+	(-h|h|help)
+		echo "html-auto-reload will use \033[33mpup\033[0m, \033[33mentr\033[0m and \033[33mtabfs\033[0m to reload the html page. it will reload the page in your browser based on the title tag of the html (tabfs can find the tab and reload if you provide the title) tabfs tab directory will be searched under \033[32m/tmp/tab/by-title...\033[0m" | >&2 fold -s
+		;;
+	(*)
+		>&2 printf 'watcher \033[32mstarted\033[0m.\nstop when you are done\n\n   \033[33;1mpkill entr\033[0m\n'
+		if [ "$2" = "safari" ]; then
+			/bin/ls | entr -n osascript -e 'tell application "Safari Technology Preview"
+				                         set docUrl to URL of document 1
+				                         set URL of document 1 to docUrl
+				                      end tell' 2>/tmp/html-auto-reload.stderr &
+		else
+			title=$(pup 'title text{}' < "$1")
+			/bin/ls |
+				entr -n bash -c "echo reload > /tmp/tab/by-title/$title*/control" \
+					2>/tmp/html-auto-reload.stderr &
+		fi
+		;;
+	esac
+else
+	>&2 echo "❯ $(basename "$0") \033[31m<htmlfile>\033[0m";
+fi

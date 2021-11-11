@@ -1,0 +1,36 @@
+#!/bin/sh
+
+# ( cat */date | timestamp2date; )  1.42s user 1.88s system 81% cpu 4.032 total
+# ( cat */date | timestamp2date; )  1.64s user 2.16s system 79% cpu 4.784 total
+# ( cat */date | timestamp2date; )  1.51s user 1.89s system 79% cpu 4.263 total
+# average: 4.359
+xargs -n1 -P4 -I'_' date -ud '@_' '+%Y-%m-%d %H:%M:%S %Z'
+
+# # ( cat */date | timestamp2date; )  1.60s user 2.12s system 80% cpu 4.635 total
+# # ( cat */date | timestamp2date; )  1.46s user 1.96s system 81% cpu 4.179 total
+# # ( cat */date | timestamp2date; )  1.50s user 2.01s system 81% cpu 4.287 total
+# # average: 4.367
+# xargs -n1 -P2 -I'_' date -ud '@_' '+%Y-%m-%d %H:%M:%S %Z'
+
+# # ( cat */date | timestamp2date; )  1.46s user 1.97s system 81% cpu 4.193 total
+# # ( cat */date | timestamp2date; )  1.52s user 2.04s system 81% cpu 4.383 total
+# # ( cat */date | timestamp2date; )  1.60s user 2.12s system 80% cpu 4.647 total
+# # average: 4.407
+# xargs -n1 -P6 -I'_' date -ud '@_' '+%Y-%m-%d %H:%M:%S %Z'
+
+# # ( cat */date | timestamp2date; )  1.52s user 2.04s system 81% cpu 4.373 total
+# # ( cat */date | timestamp2date; )  1.57s user 2.08s system 80% cpu 4.504 total
+# # ( cat */date | timestamp2date; )  1.68s user 2.17s system 79% cpu 4.817 total
+# # average: 4.564
+# xargs -n1 -P8 -I'_' date -ud '@_' '+%Y-%m-%d %H:%M:%S %Z'
+
+# # ( cat */date | timestamp2date; )  1.49s user 1.98s system 80% cpu 4.310 total
+# # ( cat */date | timestamp2date; )  1.64s user 2.14s system 79% cpu 4.720 total
+# # ( cat */date | timestamp2date; )  1.74s user 2.24s system 80% cpu 4.957 total
+# # average: 4.662
+# xargs -P4 -I_ date -ud '@_' '+%Y-%m-%d %H:%M:%S %Z'
+
+# # ( cat */date | timestamp2date; )  1.45s user 1.97s system 46% cpu 7.280 total
+# # average: 7.280
+# xargs -n1 -P1 -I'_' date -ud '@_' '+%Y-%m-%d %H:%M:%S %Z'
+

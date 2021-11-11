@@ -1,0 +1,3 @@
+#!/bin/sh
+
+git status -s | grep '^ M' | head -1 | cut -d' ' -f3-

@@ -1,0 +1,12 @@
+#!/bin/sh
+
+# Change these [INPUTS]
+# ╭────────────────────────╮
+# │                        │
+  SEP='\t'
+  PATTERN='[ -]([0-9]*:)'
+  REPLACEWITH='T\1'
+# │                        │
+# ╰────────────────────────╯
+
+awk -F"$SEP" '{gsub(/'"$PATTERN"'/, "'"$REPLACEWITH"'", $2); print}'

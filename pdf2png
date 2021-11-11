@@ -1,0 +1,9 @@
+#!/bin/sh
+
+# echo '-i | --inputfile; INPUTFILE;' | args
+# echo '-o | --outputfile; OUTPUTFILE;' | args
+
+INPUTFILE=$1
+OUTPUTFILE=$2
+
+gs -sDEVICE=pngalpha -o "$OUTPUTFILE"-%03d.png -r144 robinson-r "$INPUTFILE"

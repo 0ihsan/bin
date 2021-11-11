@@ -1,0 +1,12 @@
+#!/bin/sh
+
+usage() {
+	commandline='echo search phrase | youtube'
+	>&2 printf "usage:\n\t\033[33m$commandline\033[0m\n";
+}
+case $1 in (-h|--help) usage; exit 0;; esac
+
+while read -r line; do
+	phrases="$(echo "$line" | tr ' ' '+')"
+	open "https://www.youtube.com/results?search_query=$phrases"
+done

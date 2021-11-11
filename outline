@@ -1,0 +1,11 @@
+#!/bin/sh
+
+# outline.com
+
+mkdir -p ~/.cache/outline/
+
+while read -r url; do
+	curl -sSL "https://api.outline.com/v3/parse_article?source_url=${url}" |
+		jq -r '.data.html' | lynx -dump -stdin |
+		tee -a ~/.cache/outline/$(date +%s).txt
+done

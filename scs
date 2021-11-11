@@ -1,0 +1,38 @@
+#!/usr/bin/env python3
+
+# description
+#
+# wordlist: ['split', 'script', 'continuous']
+# scs: splitcontinuousscript -> split continuous script
+
+import sys
+import fileinput
+from optparse import OptionParser
+
+parser = OptionParser()
+parser.add_option(
+    "-w", "--word-list", dest="wordlistfile",
+    help="word list file to search for splitting",
+    metavar="FILE"
+)
+parser.add_option(
+    "-d", "--delimeter", dest="delimeter",
+    help="output delimeter",
+    default=" "
+)
+(options, files) = parser.parse_args()
+
+if not options.wordlistfile:
+    sys.stderr.write('usage: scs -w <wordlist-file.txt> [ <inputfile> | - ]\n')
+    sys.exit(1)
+else:
+    with open(options.wordlistfile) as f:
+        wordlist = ' '.join(f.read().splitlines()).split()
+
+for line in fileinput.input(files):
+    print("".join(
+        [
+            (word + options.delimeter)*line.count(word.lower())
+            for word in wordlist if word.lower() in line
+        ]
+    ).strip().rstrip(options.delimeter))

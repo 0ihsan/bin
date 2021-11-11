@@ -1,0 +1,8 @@
+#!/bin/sh
+
+if [ -z "$1" ]; then
+	>&2 printf "github-latest-release \033[31m<user/repo>\033[0m\n"
+else
+	curl -sSL "https://api.github.com/repos/$1/releases/latest" |
+		jq -r .tag_name
+fi

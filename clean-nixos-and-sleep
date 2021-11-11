@@ -1,0 +1,14 @@
+#!/bin/sh
+
+cleanup() {
+	echo '$ nix-store --gc'
+	nix-store --gc
+	echo '$ nix-store --optimize'
+	nix-store --optimize
+	echo '$ nix-env --delete-generations old'
+	nix-env --delete-generations old
+	echo '$ nix-collect-garbage --delete-older-than 1d'
+	nix-collect-garbage --delete-older-than 1d
+}
+
+cleanup && systemctl suspend

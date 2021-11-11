@@ -1,0 +1,12 @@
+#!/bin/sh
+
+esc=$(printf '\033')
+indent='     '
+
+notes | lower | grep 'suggestion:' | cut -f3 |
+	sed 's/: \([^:]*\): /: \1\n/g' |
+	fold -sw73 |
+	sed "s/^/$indent/" |
+	sed "s/^${indent}suggestion:/\n===>/g" |
+	sed "s/> \(.*\)/> ${esc}[1;33m\1${esc}[0m/g" |
+	lower

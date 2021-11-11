@@ -1,0 +1,8 @@
+#!/bin/sh
+usagemessage='<NUM><b|k|m|g|t|ki|mi|gi|ti>\nexample:\n\tfind-lt 100m'
+usage() { >&2 printf "usage: $(basename $0) $usagemessage\n"; }
+if [ "$1" = "" ]; then
+	usage;
+else
+	fd --size "-$1" -tf --exec ls -lu {} | tr -s ' ' | cut -d' ' -f5,9
+fi

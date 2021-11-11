@@ -1,0 +1,28 @@
+#!/bin/sh
+
+# NOTE: you are writing this for nothing, haven't you got?
+# TODO: Incomplete script. Fix printf to print multiple chars at once.
+
+removeprefix() { sed "s/^#[[:blank:]]*dep[endencieys]*:[[:blank:]]*//g"; }
+
+indent() {
+	level=$1
+	while read -r line; do
+		printf "%s*%d" "\t" "$level"; echo $line
+	done
+}
+
+sep=,
+while read -r line; do
+	# TODO: awkify this for making compatible to process whole script files.
+	#       It will find the "deps:" line automatically and won't touch other
+	#       lines.
+	echo "$line" |
+		tr -d ' ' |
+		removeprefix |
+		tr "$sep" '\n' |
+		while read -r dep; do
+			echo "$dep() {"
+			cat "$(which "$dep")"
+		done
+done

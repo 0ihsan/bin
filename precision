@@ -1,0 +1,19 @@
+#!/bin/sh
+
+usage() {
+	>&2 printf 'usage:\n\t\033[33mecho 123.45678 | precision <num>\033[0m\n';
+}
+
+sep=.
+case $1 in
+	(0)
+		cut -f1 -d$sep;;
+	([0-9]*)
+		while IFS="$sep" read -r integer fraction; do
+			echo ${integer}${sep}$(echo $fraction | cut -c-$1)
+		done ;;
+	(-h|--help)
+		usage; exit 0;;
+	(*)
+		usage; exit 1;;
+esac

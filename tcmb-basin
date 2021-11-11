@@ -1,0 +1,7 @@
+#!/bin/sh
+
+base=https://www.tcmb.gov.tr
+basin=wps/wcm/connect/TR/TCMB+TR/Main+Menu/Duyurular/Basin
+
+curl -sSL "$base/$basin/$(date +%Y)" | w3m -T text/html -dump | paste - -
+# curl -sS "$base/$basin/2021/DUY2021-33"

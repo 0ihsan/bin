@@ -1,0 +1,6 @@
+#!/bin/sh
+test -z $1 && TARGETDIR=. || TARGETDIR="$1"
+which -s fd && FIND="fd --full-path" || FIND=find
+$FIND $TARGETDIR -t f --exec file --mime-type '{}' |
+	grep -i 'video/' |
+	cut -d':' -f1

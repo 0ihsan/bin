@@ -1,0 +1,14 @@
+#!/usr/bin/env python3
+
+import fileinput
+from sys import stderr
+
+def snowflake2utc(tweetid):
+    return ((tweetid >> 22) + 1288834974657) / 1000.0
+
+for line in fileinput.input():
+
+    if line.strip().isnumeric():
+        print(snowflake2utc(int(line)), flush=True)
+    else:
+        print('error: input should be numeric', file=stderr)

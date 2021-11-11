@@ -1,0 +1,60 @@
+#!/usr/bin/env pypy37
+"add noise to png"
+
+from sys import stdin, stderr, argv, exit, maxsize
+
+if len(argv)>1 and argv[1] in ['-h', '--help', 'help']:
+    print('❯ echo image/path.jpg | noise <n> [output-prefix]\n', file=stderr)
+    print('note: output is current directory', file=stderr)
+    exit(0)
+
+if len(argv)>1:
+    try:
+        noise = float(argv[1])
+    except ValueError:
+        print(f'it must be a float: \033[31m{argv[1]}\033[0m',file=stderr)
+        exit(1)
+
+prefix = argv[2] if len(argv)>2 else "noised-"
+
+import os
+from time import time
+from PIL import Image
+import numpy as np
+
+# np.set_printoptions(threshold=maxsize)
+
+for rawinput in stdin:
+
+    filepath = rawinput.strip()
+    filename = os.path.basename(filepath)
+    output   = prefix+filename
+    image    = np.array(Image.open(filepath))
+    imageres = image.shape[:2]
+    multiplier = 30
+    amount = noise * multiplier
+
+    random_ints = np.random.uniform(low=-noise, high=noise, size=imageres)
+    noise_filter = np.reshape(np.repeat(random_ints, 3), image.shape)*multiplier
+
+    ir = image[:,:,0]
+    ig = image[:,:,1]
+    ib = image[:,:,2]
+    nr = noise_filter[:,:,0]
+    ng = noise_filter[:,:,1]
+    nb = noise_filter[:,:,2]
+
+    nr[ir<amount] = 0
+    ng[ig<amount] = 0
+    nb[ib<amount] = 0
+    nr[ir>255-amount] = 0
+    ng[ig>255-amount] = 0
+    nb[ib>255-amount] = 0
+
+    image = np.dstack((ir,ig,ib))
+    noise_filter = np.dstack((nr,ng,nb))
+
+    processed_image = image + noise_filter
+
+    Image.fromarray(processed_image.astype(np.uint8)).save(output)
+    print(output)

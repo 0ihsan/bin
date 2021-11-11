@@ -1,0 +1,11 @@
+#!/bin/sh
+
+title=""
+usgmsg=""
+
+lang=default
+while getopts :l: args; do case $args in
+	(l) lang="$OPTARG" ;;
+	(h) usage; exit 0 ;;
+	([?]) usage; exit 1 ;;
+esac; done

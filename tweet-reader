@@ -1,0 +1,11 @@
+#!/bin/sh
+
+tr '\n' '\0' |
+	tr '\t' '\0' |
+	xargs -0 -n3 sh -c \
+		'printf "[\033[33m%s\033[0m] - \033[1;34m%s\033[0m\n%s\n\n" \
+			"$0" \
+			"$(echo $1 | ~/bin/timestamp2date)" \
+			"$2" |
+				fold -sw80'
+

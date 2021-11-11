@@ -1,0 +1,6 @@
+#!/bin/sh
+
+md5sum * | sort |
+	awk 'BEGIN{lasthash = ""} $1 == lasthash {print} {lasthash = $1}' |
+	tr -s ' ' |
+	cut -f2- -d ' '

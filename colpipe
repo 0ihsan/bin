@@ -1,0 +1,23 @@
+#!/bin/sh
+
+field=1
+delim='\t'
+while getopts :f:d:c: args; do
+	case $args in
+		(f) field="$OPTARG";;
+		(d) delim="$OPTARG";;
+		(c) usercommand="${OPTARG}";;
+	esac
+done
+
+[ -z "$usercommand" ] || usercommand="| $usercommand"
+
+awk 'BEGIN { FS=OFS="'$delim'" }
+{
+	tmp = "echo "$'$field'" '"$usercommand"'"
+	tmp | getline processed
+	close(tmp)
+	$'$field'=processed
+	print
+	fflush()
+}'

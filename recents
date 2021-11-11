@@ -1,0 +1,5 @@
+#!/bin/sh
+
+mdfind -onlyin $HOME '((kMDItemContentModificationDate > $time.now(-60m)) && (kMDItemContentModificationDate < $time.now()))' |
+	grep -v /Library/
+

@@ -1,0 +1,107 @@
+#!/bin/sh
+
+zkdir="$HOME/zk/content"
+editor="nvim"  # NOTE: {n,}vim arguments used in the following code. change
+               #       those too!
+
+new() {
+	# "$post" is a number that will be the next number (directory name) in
+	# zettelkasten
+	post="$zkdir/$(( $(/bin/ls "$zkdir"|sort -n|tail -1)+1 ))"
+	mkdir -p "$post"
+	date +%s > "$post/date"
+
+	if [ -n "$*" ]; then
+		echo "$*" > "$post/title"
+	fi
+
+	openeditor "$post"
+}
+
+search() {
+	if [ -n "$*" ]; then query="$* "; else query=""; fi
+	cd "$zkdir"; rg . -g'!content' |
+		fzf --select-1 --exit-0 -q "$query" --with-nth=-1 --print-query -d/
+}
+
+openeditor() {
+	if [ -n "$1" ]; then
+		$editor +":se ft=markdown|:echo '$(cat "$1/title" 2>/dev/null)'" \
+			"$1/content" \
+			"$1/title" \
+			"$1/what" \
+			"$1/tag"
+	fi
+}
+
+case $1 in
+
+	(n|-n|--new)
+
+		shift 1;
+		new "$(echo "$*" | title)"
+	;;
+
+	(s|-s|--search)
+
+		shift 1
+		if [ -n "$*" ]; then query="$* "; else query=""; fi
+		found=$(cd "$zkdir"; rg . |
+			fzf --select-1 --exit-0 -q "$query" --with-nth=-1 --print-query -d/)
+
+		if [ "$(echo "$found" | wc -l)" = 2 ]; then  # found existing file
+			post="$zkdir/$(echo "$found" | tail -1 | rev|cut -f2- -d/|rev)"
+			openeditor "$post"
+		fi
+	;;
+
+	(p|-p|--preview)
+
+		shift 1;
+		found=$(search "$*");
+
+		echo TODO: build markdown command. see: build-page.c
+		echo '   | bat -lmd'
+
+	;;
+
+	(l|-l|--last)
+
+		post="$zkdir/$(/bin/ls "$zkdir" | sort -n |tail -1|rev|cut -f2- -d/|rev)"
+		openeditor "$post"
+
+	;;
+
+	(*)
+
+		found=$(search "$*")
+
+		if [ "$(echo "$found" | wc -l)" = 2 ]; then  # found existing file
+
+			post="$zkdir/$(echo "$found" | tail -1 | rev|cut -f2- -d/|rev)"
+			$editor +":se ft=markdown|:echo '$(cat "$1/title" 2>/dev/null)'" \
+				"$post/content"
+
+		else  # create new
+
+			if [ -n "$found" ]; then
+
+				title_=$(echo "$found" | title)
+				printf "create\n\n    \033[33m%s\033[0m\n\n[y/N]: " "$title_"
+				read -r answer
+
+				case "$answer" in
+					(y|Y|ye|yes|yeah|yaeh|k|ok|mkey)
+						new "$title_";
+					;;
+					(*)
+						exit 0;
+					;;
+				esac
+
+			fi
+
+		fi
+
+	;;
+esac

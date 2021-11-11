@@ -1,0 +1,8 @@
+#!/usr/bin/env osascript
+
+on run argv
+	tell application "System Events" to tell application process (item 1 of argv)
+		get size of window 1
+	end tell
+end
+

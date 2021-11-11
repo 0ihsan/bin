@@ -1,0 +1,3 @@
+#!/bin/sh
+nix-shell -p nmap --run 'nmap 192.168.1.1-1/24 -PR'
+

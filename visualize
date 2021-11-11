@@ -1,0 +1,108 @@
+#!/bin/sh
+
+ESC=$(printf '\033')
+GREEN="${ESC}[32m";
+YELLOW="${ESC}[33m";
+RESET="${ESC}[0m";
+INDENT="   ";
+usage() {
+	>&2 printf "%bUSAGE:%b\n\n%s" "${YELLOW}" "${RESET}" "${INDENT}";
+	>&2 printf "%b FILE [SUBCOMMAND]\n\n" "$(basename "$0")";
+	>&2 printf "%bFLAGS:%b\n" "${YELLOW}" "${RESET}";
+	sed -n '/case $[A-z0-9]* in/,$p' "$0" |
+	   grep '\s\+(\-\|(\--' |
+		sed "s/^\t* */${INDENT}/g;/(\*)/d;s/\t/${INDENT}/g;s/ #\([^#]*\)/\1/g" |
+		sed "s/|/$RESET, $GREEN/g;s/(/$GREEN/g;s/)/$RESET/g"
+	>&2 printf "\n%bSUBCOMMANDS:%b\n" "${YELLOW}" "${RESET}";
+	sed -n '/case $[A-z0-9]* in/,$p' "$0" |
+	   grep '\s\+([^)]*)' | grep -v '(\-' |
+		sed "/(\*)/d;s/\t/${INDENT}/g" |
+		sed "s/#\([^#]*\)/\1/g;s/(/$GREEN/g;s/)/$RESET/g"
+}
+
+if [ "$1" = "-" ]; then
+	FILE=-
+elif [ -f "$1" ]; then
+	FILE=$1
+else
+	>&2 echo please provide either "-" or a FILE;
+	exit 1;
+fi
+shift 1
+
+case $1 in
+
+	(-h|--help)  # display this screen
+		usage; exit 0;;
+
+	(impulse)   # simple line chart
+		gnuplot -p -e "@pngdark; plot \"$FILE\" using 1:2 with impulses"
+	;;
+
+	(line)      # simple line chart
+		gnuplot -p -e "@pngdark; plot \"$FILE\" using 1:2 with lines ls 25"
+	;;
+
+	(candle)    # input is shaped like "time  open  low  high  close  volume"
+		case $2 in
+			(-f|--full)  # activate features: ... volume, ema{50,100,200}
+				# shellcheck disable=2016
+				# NOTE: neither comment (#) nor a line without ending with semicolon
+				#       is allowed here:
+				gnuplot -p -e "@pngdark;
+					input = \"$FILE\";
+					set multiplot;
+
+					set noborder;
+					set lmargin at screen 0.03;
+					set rmargin at screen 0.95;
+					set tmargin at screen 0.97;
+
+					@price;
+					set ytics left offset graph 1.01, 0;
+					set autoscale xfix;
+					set bmargin 0;
+					set size 1, 0.98; set origin 0, 0.02;
+
+					set style fill solid;
+					plot input u 1:2:3:4:5:(\$5 < \$2 ? -1 : 1) notitle with candlesticks palette,
+					     input using 1:8 title \"200 ema\" with lines ls 16 lw 2,
+					     input using 1:7 title \"100 ema\" with lines ls 26 lw 1.5,
+					     input using 1:6 title \"50 ema\" with lines ls 25 lw 1,
+					     input using 1:9 title 'forecast' with lines ls 30;
+
+					unset multiplot
+					"
+			;;
+			(*)
+				gnuplot -p -e \
+					"@pngdark; @price; plot \"$FILE\" u 1:2:3:4:5:(\$5 < \$2 ? -1 : 1) with candlesticks palette"
+			;;
+		esac
+	;;
+
+	(*)
+		usage; exit 1;;
+
+esac
+
+
+
+					# set ytics add ('---now' 30000);
+
+					# set tmargin 0;
+					# set border 4095;
+					# set yrange [0:100];
+					# set ytics (30,70);
+					# set format y;
+					# set size 1, 0.15; set origin 0, 0.15;
+					# plot input u 1:10 title 'rsi14' with lines ls 27;
+
+					# set format y \"$%g\";
+					# set ytics auto;
+					# set autoscale y;
+					# set xdata time;
+					# set bmargin 2;
+					# set size 1, 0.15; set origin 0, 0.0;
+					# plot input u 1:11 title 'atr14' with lines ls 29;
+

@@ -1,0 +1,25 @@
+#!/bin/sh
+
+# deps: nix, scs, lower, tac, colpipe, awk, printerr
+
+if [ -n "$1" ]; then
+
+	[ -f "$1" ] || {
+		printerr "no such file or directory: \033[31m$1\033[0m\n";
+		exit 2;
+	}
+
+	assets=$(mktemp)
+	echoerr "Enter each symbol that you have in $1 and press CTRL-D"
+	cat > $assets
+
+	nix run 'nixpkgs#xlsx2csv' -- -d tab "$1" |
+		lower |
+		tail -n +2 |
+		tac |
+		colpipe -f2 -c "scs -w $assets -d:" |
+		awk -f ~/bin/binance-trades2ledger-cli.awk
+
+else
+	printerr "usage:\n\t\033[33m$(basename $0) <inputfile.xslx>\033[0m\n"
+fi

@@ -1,0 +1,5 @@
+#!/bin/sh
+
+# TODO: handle -r for reverse
+
+awk '{ print length, $0 | "sort -n" }' | cut -d' ' -f2-

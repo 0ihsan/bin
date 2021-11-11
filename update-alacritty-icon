@@ -1,0 +1,4 @@
+#!/bin/sh
+
+iconutil -c icns "$HOME/Pictures/Alacritty.iconset" \
+	-o /Applications/MacPorts/Alacritty.app/Contents/Resources/alacritty.icns

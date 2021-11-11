@@ -1,0 +1,6 @@
+#!/bin/sh
+
+while read -r line; do
+	echo "$line" | rev | cut -c4- | rev | xargs -I{} date -ud '@{}' # '+%Y-%m-%dT%H:%M:%S%Z'
+done
+

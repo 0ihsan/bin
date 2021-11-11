@@ -1,0 +1,6 @@
+#!/bin/sh
+if [ -z "$1" ]; then
+	echo 'detectos: please provide an ip address.'
+else
+	nix-shell -p nmap --run "sudo nmap -O $1"
+fi

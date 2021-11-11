@@ -1,0 +1,15 @@
+#!/bin/sh
+
+# search <stdin> with google using safari.
+
+while read -r line; do
+	query=$(echo $line | sed 's/ /+/g;s/"/\\"/g')
+	osascript -e '
+	tell application "Safari"
+		tell window 1
+			set current tab to (make new tab with properties {URL:"https://www.google.com/search?client=safari&rls=en&q='$query'&ie=UTF-8&oe=UTF-8"})
+			activate
+		end tell
+	end tell
+	'
+done

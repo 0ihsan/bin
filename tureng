@@ -1,0 +1,5 @@
+#!/bin/sh
+
+while read -r line; do
+	open "https://tureng.com/en/turkish-english/$(echo $line | iconv -c -f utf-8 -t ISO-8859-11//translit | sed 's/"//g' | sed 's/ /+/g')"
+done

@@ -1,0 +1,15 @@
+#!/bin/sh
+
+filename=$1
+tablename=$(echo "$filename" | cut -f1 -d '.')
+extension=$(echo "$filename" | rev| cut -d '.' -f1 |rev)
+
+if [ "$extension" = "csv" ]; then
+	>&2 echo '\033[31mcsv is not yet implemented\033[0m'
+	exit 1
+fi
+
+printf '.mode ascii\n.separator "\t" "\\n"\n.import %s %s' \
+	"$filename" "$tablename" |
+	litecli :memory:
+

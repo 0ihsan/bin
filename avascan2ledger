@@ -1,0 +1,24 @@
+#!/bin/sh
+
+# TODO: Unfinished script
+>&2 echo '\033[31mUNFINISHED SCRIPT\033[0m'
+exit 0
+
+format_query() {
+	while read hash; do
+		echo " { \"query\":
+		\"\"
+		}";
+	done
+}
+
+send_request() {
+	while read -r line; do
+		curl -sSX POST -H"Content-Type: application/json" \
+			-d "$(echo $hash | format_query)";
+	done
+}
+
+send_request | 
+
+fee=(($gasUsed * 0.000000001 * 470))

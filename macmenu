@@ -1,0 +1,6 @@
+#!/usr/bin/osascript
+
+# Craeted at: Mon Nov 30 13:24:57 +03 2020
+
+set theString to text returned of (display dialog "What are you searching for?" default answer "" buttons {"Search","Cancel"} default button 1)
+

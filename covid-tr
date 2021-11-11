@@ -1,0 +1,10 @@
+#!/bin/sh
+
+curl -sSL 'https://covid19.saglik.gov.tr/TR-66935/genel-koronavirus-tablosu.html' |
+	rg 'geneldurumjson = ' |
+		tail -c +22 |
+		jq -r '.[] | [ .tarih, .gunluk_vaka, .gunluk_vefat ] | @tsv' |
+		tac #|
+		# sed 's/\([^\.]*\).\([^\.]*\).\([^\.]*\)\t\(.*\)/\3-\2-\1\t\4/g'
+
+>&2 printf 'date    \tdeath\tcase\n'

@@ -1,0 +1,29 @@
+#!/usr/bin/env python3
+
+from prophet import Prophet
+from sys import stdin, stdout, stderr
+import pandas as pd
+
+# try:
+#   tail -n +2 ~/data/Binance_BTCUSDT_1h.csv | tac | awk -F, -v OF='\t' '{ print $1/1000 "\t"$7 }' | fbp
+
+if __name__ == '__main__':
+    df = pd.read_csv(stdin, delimiter="\t", header=None, parse_dates=[0])
+
+    # FIXME: columns are not renamed they are still "0" and "1"
+    df = df.rename(columns={"0": "time", "1": "value"})
+
+    df.to_json(stdout, index=True, orient='records', date_format='%s',
+               date_unit='s')
+
+    # model_df = pd.DataFrame({"ds": pd.to_datetime(df[0],unit="s"),
+    #     "y": df[1]})
+    # model = Prophet()
+    # model.fit(model_df)
+    # future = model.make_future_dataframe(periods=forecast_win,
+    #                                      freq=frequency[interval])
+    # forecast = model.predict(future)
+    # forecast = forecast.rename(columns={'ds': 'time'})
+    # forecast.to_json(stdout, index=True, orient='records', date_format='%s',
+    #                  date_unit='s')
+

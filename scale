@@ -1,0 +1,13 @@
+#!/bin/sh
+
+# description
+#    213.123151 -> 213.12
+
+# usage:
+#    echo 123.445435 | scale 2
+
+s=2
+while read -r line; do
+	[ -n "$1" ] && s=$1;
+	printf "%.${s}f\n" "$line"
+done

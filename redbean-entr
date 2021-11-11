@@ -1,0 +1,13 @@
+#!/bin/sh
+
+case "$1" in
+(-h|h|help)
+	echo "redbean-entr will zip *.html *.css *.js *.lua into redbean.zip and reload the redbean webserver while it is running." |
+		>&2 fold -s
+	;;
+(*)
+	>&2 printf 'watcher \033[32mstarted\033[0m.\nstop when you are done\n\n   \033[33;1mpkill entr\033[0m\n'
+	/bin/ls -- *.html *.css *.js *.lua 2>/dev/null |
+		entr -n sh -c '>/dev/null zip redbean.zip -- *.html *.css *.js *.lua && kill -CONT "$(pgrep redbean.zip)"' 2>/tmp/redbean-entr.stderr &
+	;;
+esac

@@ -1,0 +1,3 @@
+#!/bin/sh
+
+mpv "https://radio-trtradyo$1.live.trt.com.tr/master_128.m3u8"

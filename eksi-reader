@@ -1,0 +1,10 @@
+#!/bin/sh
+
+sep='-----------------------------------------------------------------------------'
+
+while read -r line; do
+	echo "$line" | eksi-author-entry | format-eksi-entry > /tmp/author-entry.eksi
+	echo "$line" | eksi -sbest | format-eksi-entry > /tmp/nice.eksi
+	printf '%s\n\n' "$sep" > /tmp/sep
+	bat /tmp/author-entry.eksi /tmp/sep /tmp/nice.eksi
+done

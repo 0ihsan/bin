@@ -1,0 +1,8 @@
+#!/bin/sh
+
+# curl 'https://uk.tradingview.com/conversation-status/?_rand=0.4284892393960512&offset=0&room_id=bitcoin&stat_interval=1D&stat_symbol=BINANCE%3AAVAXUSDTPERP&is_private=' \
+
+curl 'https://uk.tradingview.com/conversation-status/?room_id=bitcoin&stat_interval=1D' |
+	jq '.messages[] | .time,.symbol,.interval,.text' |
+	paste - - - - #|
+	#rg -w ' buys?| longs?| ups?| downs?| shorts?| sells?'

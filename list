@@ -1,0 +1,19 @@
+#!/bin/sh
+
+# deps: grepp
+
+notesdir=$HOME/zk # zettelkasten
+
+notes() {
+	# FIXME: only filename and title should be printed
+	grep -r '^# ' --exclude-dir='.*' "$notesdir"
+}
+
+selfcommands() {
+	grepp '^case' "$0" | grep -o '^\s*([A-z]*)' | sed 's/[)(]//g;'
+}
+
+case "$1" in
+	(notes) notes;;
+	(*) printf "available sub commands are:\n$(selfcommands)\n";;
+esac

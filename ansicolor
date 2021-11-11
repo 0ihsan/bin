@@ -1,0 +1,31 @@
+#!/bin/sh
+
+showcolor() {
+	prefix='\033['
+	suffix=m # ;42m
+	printf \\${prefix}${1}${suffix}
+	echo
+}
+
+while read -r line; do
+	case $line in
+		(normal)      showcolor 31;;
+		(red)         showcolor 31;;
+		(green)       showcolor 32;;
+		(yellow)      showcolor 33;;
+		(blue)        showcolor 34;;
+		(purple)      showcolor 35;;
+		(aqua)        showcolor 36;;
+		(lightgray)   showcolor 37;;
+		(gray)        showcolor 90;;
+		(lightred)    showcolor 91;;
+		(lightgreen)  showcolor 92;;
+		(lightyellow) showcolor 93;;
+		(lightblue)   showcolor 94;;
+		(lightpurple) showcolor 95;;
+		(lightaqua)   showcolor 96;;
+		(white)       showcolor 97;;
+		(reset)       showcolor 0;;
+		(*) echo $line;;
+	esac
+done

@@ -1,0 +1,5 @@
+#!/bin/sh
+
+while read -r line; do
+	echo "-obase=2; $line" | bc
+done

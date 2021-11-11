@@ -1,0 +1,14 @@
+#!/usr/bin/env awk -f
+
+# TODO: Count the tabs at the begining of the line and sort it, then print the
+# line that has the biggest number at first char.
+
+BEGIN { FS = "[^\t]+" }
+
+{
+	print $0
+	gsub($1, length($1), $1)
+	print $0
+}
+
+END { }

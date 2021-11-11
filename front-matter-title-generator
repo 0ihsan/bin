@@ -1,0 +1,33 @@
+#!/bin/sh
+
+usage() {
+	commandline="$(basename "$0") [ FILE(S) (or from stdin) ]"
+	>&2 printf "usage:\n\t\033[33m%s\033[0m\n" "$commandline";
+}
+case $1 in (-h|--help) usage; exit 0;; esac
+
+if [ -n "$1" ]; then
+
+	echo "$@"
+
+else
+
+	while read -r filename; do
+
+		if [ $(has-front-matter-title "$filename" | cut -f1) = "yaml" ]; then
+			# if has title: section
+				# exit 0
+			# else
+				# add title: section
+		else
+			# create front matter
+			# add title: section
+		fi
+
+		echo "$filename"
+
+	done
+
+fi
+
+		# grep -q '^title: \w+' $@;

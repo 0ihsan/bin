@@ -1,0 +1,7 @@
+#!/bin/sh
+
+rga . | fzf | {
+	while read -r line; do
+		echo $line; echo $line | cut -d: -f1 | xargs open;
+	done;
+}

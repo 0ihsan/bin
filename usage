@@ -1,0 +1,21 @@
+#!/bin/sh
+
+# deps: printerr, errcho
+
+# usage of usage:
+#	❯ ./usage <title> <arguments> [ "$option descriptions" ]
+
+title="$1"
+args="$2"
+opts="$3"
+
+printerr "$title\n\nusage:
+	❯ \033[33m"; errcho "$args\033[0m";
+
+if [ -n "$opts" ]; then
+	errcho "\noptions:";
+	echo "$opts" | while read -r opt; do
+		printf "\t%s\n" "$opt";
+	done
+fi
+

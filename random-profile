@@ -1,0 +1,9 @@
+#!/bin/sh
+
+namesurname=$(cat ~/data/female-name ~/data/male-name | shuf | head -2)
+name=$(echo "$namesurname" | head -1)
+surname=$(echo "$namesurname" | tail -1)
+
+echo "$name $surname"
+echo "$surname_$(head -c2 /dev/urandom | base64 | head -c2)_$(random 1 100)_$name@icloud.com" | lower
+eth-keys

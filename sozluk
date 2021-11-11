@@ -1,0 +1,4 @@
+#!/bin/sh
+
+xargs -I_ -P4 sh -c 'curl -sSL "https://sozluk.gov.tr/gts?ara=_" | jq'
+# xargs -I_ -P4 sh -c 'curl -sSL "https://sozluk.gov.tr/atasozu?ara=_" | jq'

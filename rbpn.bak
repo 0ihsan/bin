@@ -1,0 +1,29 @@
+#!/bin/sh
+
+d() { echo "$1" | base64 -d; }; u='YmVsbGVzYS5jbw==';
+vbyid() { while read -r id; do echo "https://s.$(d $u)/v/$id/720.mp4"; done }
+id() { sed 's/.*id=\([^"]*\).*/\1/g'; }; fjson="$HOME/.cache/b.json"
+api() {
+
+}
+
+count=$(jq length < "$fjson")
+start=$(jq -r '.[].id' < "$fjson" | tail -n 1)
+r=$(random -a "$count")
+
+update=false
+n=$(jq -r ".[$((r + start - 1))].id" < "$fjson")
+while getopts :n:u args; do case $args in
+	(n) n="$OPTARG" ;;
+	(u) update=true ;;
+	(*) exit 1 ;;
+esac; done
+if "$update"; then v "$1" > "$fjson"; 
+
+ca=$(jq -r ".[$n]" < "$fjson" | jq -r '.categories[0].category')
+im=$(jq -r ".[$n]" < "$fjson" | jq -r '.image')
+vi=$(jq -r ".[$n]" < "$fjson" | jq -r '.embed' | id | vbyid)
+
+echo "$vi" | pbcopy
+safari-private "$im"
+echo opened "$ca"

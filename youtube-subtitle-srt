@@ -1,0 +1,13 @@
+#!/bin/bash
+
+# youtube-subtitle 
+# Extract YouTube auto subtitle from a video.
+
+
+usage() { echo "$(basename "$0"): <youtube-video-url>"; }
+if [ "$1" = "" ]; then usage; exit 1; fi
+
+URL="$1"
+lang=en
+
+youtube-dl --sub-format srt --write-auto-sub --sub-lang $lang --skip-download "$URL"

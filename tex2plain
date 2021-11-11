@@ -1,0 +1,13 @@
+#!/bin/sh
+
+# "\overline{x}\overline{y}+xyz+\overline{x}Y"
+# becomes
+# " ~x ~y or xyz or  ~xy"
+lower |
+	sed 's:\\overline{\([^}]*\)}: ~(\1):g' |
+	sed 's:\\left::g;s:\\right::g' |
+	sed 's:^[[:blank:]]*::g' |
+	sed 's: : and :g' |
+	sed 's:+: or :g' |
+	sed 's:( and: and ( :g' |
+tr -s ' '

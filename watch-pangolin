@@ -1,0 +1,4 @@
+#!/bin/sh
+
+while true; do pangolin-data >> pangolin.jsonl; sleep 9; done
+

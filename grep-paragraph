@@ -1,0 +1,5 @@
+#!/bin/sh
+
+# grep paragraph instead of line.
+
+awk -v RS= '/$1/' $2

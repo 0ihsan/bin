@@ -1,0 +1,4 @@
+#!/bin/sh
+while read line; do
+	nix-shell youtube-dl --run "--extract-audio --audio-format mp3 '$line'"
+done

@@ -1,0 +1,5 @@
+#!/bin/sh
+
+test -z "$1" && TARGETDIR=. || TARGETDIR="$1"
+echo "Target Directory = $TARGETDIR"
+find-videos "$TARGETDIR" | xargs -I'{}' -L1 compress-video '{}'

@@ -1,0 +1,17 @@
+#!/bin/sh
+
+# deps: open
+
+case $1 in
+	(-h|--help|help)
+		printf 'usage:\n\techo github search phrase | \033[33mgithub\033[0m\n';
+		exit 0;;
+esac
+
+if (which -s tr); then
+	if (tr -h >/dev/null 2>&1); then
+		tr -u ' ' '+' | xargs -I_ open https://github.com/search?q=_
+	else
+		tr ' ' '+' | xargs -I_ open https://github.com/search?q=_
+	fi
+fi

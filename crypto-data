@@ -1,0 +1,6 @@
+#!/bin/sh
+
+websocat 'wss://stream.binance.com:9443/ws/!miniTicker@arr'
+
+# websocat 'wss://stream.binance.com:9443/ws/!miniTicker@arr' |
+# 	jq -r '.[] | select(.s == "BTCUSDT") | [(.E/1000),.c] | @tsv'

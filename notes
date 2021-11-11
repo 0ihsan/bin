@@ -1,0 +1,54 @@
+#!/bin/sh
+
+# =============================================================================
+# File:        tweets
+# Description: log of life
+# Author:      ihsan <ihsanl at pm dot me>
+# Created At:  2019
+# License:     MIT License
+# =============================================================================
+
+#--file-approach--@1595361762---------------------------------------------------
+# EDIT: this is the best approach i used this for months without any problems.
+
+file="${HOME}/Sync/log/life"
+
+if [ -n "$1" ]; then
+	esc=$(printf '\033')
+	indent='     '
+	phrase=$1
+	lower < "$file" | grep "$phrase:" | cut -f3 |
+		sed 's/: \([^:]*\): /: \1\n/g' |
+		fold -sw73 |
+		sed "s/^/${indent}/" |
+		sed "s/^${indent}${phrase}:/\n===>/g" |
+		sed "s/> \(.*\)/> ${esc}[1;33m\1${esc}[0m/g" |
+		lower
+else
+	cat "$file"
+fi
+
+#----notes----------------------------------------------------------------------
+
+# List move column in $db with fzf.
+
+# TODO: Add -w option
+# to reduce every sentence to its most interesting word.
+# So every sentence shown as a word. It will go like this:
+#    Pick the word that other sentences not contain or minimum includes count.
+
+#----db-approach--@2019---------------------------------------------------------
+
+# search=false
+# search_command() { fzf -d '\t' --with-nth 2; }
+# while getopts :s args; do
+# 	case $args in
+# 		(s) search=true;;
+# 		(*) ;;
+# 	esac
+# done
+# db=${HOME}/Dropbox/Data/moves.db;
+# [ -f "$db" ] &&
+# 	printf '.mode tabs\nselect date,move from moves' | sqlite3 "$db" |
+# 		if $search; then search_command; else cat /dev/stdin; fi
+

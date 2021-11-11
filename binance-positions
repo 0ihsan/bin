@@ -1,0 +1,5 @@
+#!/bin/sh
+
+python3 ~/code/github.com/ihsanturk/binance-cli-py/binance_cli/cli.py positions |
+	jq '.[] | select((.positionAmt | tonumber) > 0) | .symbol,.unRealizedProfit' |
+	paste - -

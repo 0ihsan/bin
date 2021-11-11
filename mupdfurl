@@ -1,0 +1,18 @@
+#!/bin/bash
+
+if [ -z "$1" ]; then
+   read -rp "URL: " url
+   if [ "$url" = "" ]; then
+      echo Please specify a pdf URL.
+      exit 2;
+   fi
+else
+   url=$1
+fi
+
+filename="$(echo "$url" | awk -F/ '{printf $NF}')"
+mkdir -p ~/Documents/ && cd ~/Documents
+curl -sLO "$url" && {
+	echo "$filename downloaded to Documents. Opening with mupdf-gl..."
+	mupdf-gl "${HOME}/Documents/$filename"
+}

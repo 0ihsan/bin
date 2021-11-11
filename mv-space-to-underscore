@@ -1,0 +1,7 @@
+#!/bin/sh
+#dependencies:errcho
+I="$1"
+execname=$(basename "$0")
+test -z "$I" && { errcho "$execname: no input file given to fix!"; exit 1; }
+O=$(echo "$I" | sed 's/ /_/g')
+mv "$I" "$O"

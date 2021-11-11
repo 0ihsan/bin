@@ -1,0 +1,44 @@
+#!/bin/sh
+
+echo wait a bit and try
+printf '    $ \033[33mssh ihsan@localhost -p2222\033[0m\n'
+
+qemu-system-x86_64 \
+	-m 4G \
+	-smp 2 \
+	-cpu max \
+	-machine type=q35 \
+	-display default,show-cursor=on \
+	-netdev user,id=net0,hostfwd=tcp::54-:8080,hostfwd=tcp::2222-:22 \
+	-device e1000,netdev=net0 \
+	~/vm/alpine.qcow2
+	# -device intel-hda \
+	# -device hda-duplex \
+	# -device virtio-serial-pci \
+	# -usb \
+	# -vga std \
+
+	# kiss linux partition SHOULD BE UNMOUNTED ON THE HOST MACHINE
+	#
+	# -drive file=/dev/disk0s3,format=raw,if=virtio \
+	#
+
+# qemu-system-x86_64 \
+# 	-m 4G \
+# 	-nographic \
+# 	-serial mon:stdio \
+# 	-netdev user,id=net0,hostfwd=tcp::2222-:22 \
+# 	-device e1000,netdev=net0 ~/vm/alpine.qcow2
+
+# qemu-system-x86_64 \
+# 	-machine accel=hvf \
+# 	-cpu Haswell-v4 -smp 2 -m 4G \
+# 	-device intel-hda -device hda-output \
+# 	-device virtio-vga \
+# 	-device virtio-keyboard-pci \
+# 	-device virtio-net-pci,netdev=net0 \
+# 	-device virtio-mouse-pci \
+# 	-display cocoa,gl=es \
+# 	-netdev user,id=net,ipv6=off \
+# 	-drive "if=virtio,file=/Users/ihsan/vm/alpine.qcow2,discard=on"
+

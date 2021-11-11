@@ -1,0 +1,6 @@
+#!/bin/sh
+
+while read -r line; do
+	printf ".EQ\n%s\n.EN\n" "$(echo $line | sed 's/^\s\+//g')" |
+		eqn -TMathML | grep '<math>';
+done

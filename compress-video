@@ -1,0 +1,67 @@
+#!/bin/sh
+
+# config
+BACKUP=true
+INPUTVIDEO="$1"
+COMPRESSAGAIN=true
+BACKUPDIR=/tmp/original-videos
+FPS=30 # higher is smoother video
+CRFVALUE=28 # lower is higher quality
+BITRATE=1000k # higher is higher quality
+PRESET=veryfast # [veryslow|slower|slow|medium|fast|faster|veryfast|superfast|ultrafast]
+
+[ "$INPUTVIDEO" = "" ] &&
+	{ >&2 echo "$(execname): input file is missing"; exit 1; }
+
+execname() { basename "$0"; }
+woextension() { echo "$1" | cut -f1 -d '.'; }
+extension() { echo "$1" | rev | cut -d '.' -f1 | rev; }
+
+INPUTEXTEN=$(extension "$INPUTVIDEO")
+if [ "$2" = "" ]; then
+	TARGETEXTEN=mp4
+	OUTPUTVIDEO=$(woextension "$INPUTVIDEO")
+	if $COMPRESSAGAIN; then
+		while [ -f "$OUTPUTVIDEO.$TARGETEXTEN" ]; do
+			OUTPUTVIDEO="$OUTPUTVIDEO-1"
+		done
+	else
+		[ -f "$OUTPUTVIDEO.$TARGETEXTEN" ] &&
+			{
+				>&2 echo "$(execname): $OUTPUTVIDEO.$TARGETEXTEN is already exists!";
+				exit 1;
+			}
+	fi
+	OUTPUTVIDEO="$OUTPUTVIDEO.$TARGETEXTEN"
+else
+	OUTPUTVIDEO="$2"
+	TARGETEXTEN=$(extension "$2")
+fi
+
+echo
+echo "Compressing '$INPUTVIDEO' -> '$OUTPUTVIDEO'"
+echo
+
+ffmpeg -i "$INPUTVIDEO" \
+	-r $FPS \
+	-c:a aac \
+	-c:v libx264 \
+	-b:v "$BITRATE" \
+	-preset "$PRESET" \
+	-map_metadata 0 \
+	-crf "$CRFVALUE" \
+	-movflags use_metadata_tags \
+	"$OUTPUTVIDEO" &&
+	{
+		touch -r "$INPUTVIDEO" "$OUTPUTVIDEO" # keep the file creation date
+		if $BACKUP; then
+			mkdir -p $BACKUPDIR
+			echo "$(execname): backing up $INPUTVIDEO -> $BACKUPDIR"
+			rsync -au "$INPUTVIDEO" "$BACKUPDIR/" || {
+				>&2 echo "$(execname): Cannot backup! Leaving the original video as is.";
+				exit 1
+			}
+		fi
+		mv "$INPUTVIDEO" "/tmp/last-original.$INPUTEXTEN" &&
+			mv "$OUTPUTVIDEO" "$(woextension $INPUTVIDEO).$TARGETEXTEN"
+	}

@@ -1,0 +1,15 @@
+#!/bin/sh
+
+# deps: usage
+
+title='useragent';
+args='---h'
+opts='-h   show this help screen'
+usg() { usage "$title" "$title $args" "$opts"; }
+
+while getopts :h args; do case $args in
+	(h) usg; exit 0 ;;
+	([?]) usg; exit 2 ;;
+esac; done
+
+echo 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101 Firefox/78.0'

@@ -1,0 +1,21 @@
+#!/bin/sh
+
+file=${HOME}/Sync/log/life
+
+main() {
+	while read -r line; do
+		[ -n "$line" ] &&
+			count="$(wc -l < "$file")"
+			printf "%s\t%s\t%s\n" \
+				"$count" \
+				"$(date +%s)" \
+				"$line" \
+			>> "$file"
+			echo "$count"
+	done;
+}
+
+if ! [ "$1" = "fuckoff" ]; then
+if which -s rlwrap; then rlwrap "$0" fuckoff; else main; fi else main;
+fi
+

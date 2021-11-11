@@ -1,0 +1,6 @@
+#!/bin/sh
+
+while read -r line; do
+	echo "$line" | xargs -I{} date -d '{}' +%s
+done
+

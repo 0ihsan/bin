@@ -1,0 +1,16 @@
+#!/bin/sh
+
+url=YOUR_URL
+case $1 in
+	(-h|--help) >&2 printf 'usage:\n\t\033[33mecho {query { "your" query bla bla... }} | graphql2curl [ api_url ] \033[0m\n'; exit 0;;
+	(*) url=$1
+esac
+
+while read -r line; do
+	query+="$(echo $line) "
+done
+
+echo $query
+
+curl -iH 'Content-Type: application/json' -XPOST -d "{\"query\":\"$query\"}"\
+	$url

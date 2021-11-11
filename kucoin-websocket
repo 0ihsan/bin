@@ -1,0 +1,8 @@
+#!/bin/sh
+
+echo '{
+	"id": 1545910660739,
+	"type": "subscribe",
+	"topic": "/market/ticker:QI-AVAX",
+	"response": true
+}' | websocat -n 'wss://kucoin.com/api/v1/bullet-public'

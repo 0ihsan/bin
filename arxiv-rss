@@ -1,0 +1,4 @@
+#!/bin/sh
+
+curl -sSL http://arxiv.org/rss/"$1" | xpath -q -e //item/title | head |
+	sed 's/<title>//g;s/<\/title>//g'

@@ -1,0 +1,3 @@
+#!/bin/sh
+
+jq -r '.symbols[] | .symbol' < ~/data/binance-futures-exchange-info.json

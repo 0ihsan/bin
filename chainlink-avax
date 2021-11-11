@@ -1,0 +1,8 @@
+#!/bin/sh
+
+timestamp=$(date +%s)
+remainder=$((timestamp % 60))
+lasthour=$((timestamp - remainder))
+
+printf '{"type":"connection_init","payload":{}}\n{"id":"1","type":"start","payload":{"query":"\nsubscription FeedSubscription($contractAddress: ID!, $from: Int!) {\n  feed(id: $contractAddress) {\n    id\n    version\n    oracles {\n      id\n    }\n    requiredSubmissions\n    rounds(\n      first: 1000\n      where: { value_not: null, unixTimestamp_gt: $from }\n      orderBy: unixTimestamp\n      orderDirection: desc\n    ) {\n      id\n      value\n      unixTimestamp\n    }\n    latestRound: rounds(\n      where: { value_not: null }\n      first: 1\n      orderBy: unixTimestamp\n      orderDirection: desc\n    ) {\n      id\n      value\n      unixTimestamp\n      submissions {\n        id\n        oracle {\n          id\n          node {\n            id\n          }\n        }\n        gasPrice\n        unixTimestamp\n        value\n        transmitter\n      }\n    }\n  }\n}\n","variables":{"contractAddress":"0x9450a29ef091b625e976ce66f2a5818e20791999","from":'"$lasthour"'}}}\n' |
+	websocat -n 'wss://api.thegraph.com/subgraphs/name/deividask/chainlink-avalanche-mainnet'

@@ -1,0 +1,8 @@
+#!/bin/sh
+
+while read -r line; do
+	prgpath=$(which $line)
+	if not $(empty "$prgpath"); then
+		< $prgpath
+	fi
+done

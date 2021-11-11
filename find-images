@@ -1,0 +1,8 @@
+#!/bin/sh
+test -z "$1" && TARGETDIR=. || TARGETDIR="$1"
+which fd 2>&1 >/dev/null && FIND=fd || FIND=find
+# which -s fd && FIND=fd || FIND=find
+$FIND $TARGETDIR -t f |
+	xargs -I'{}' file --mime-type '{}' |
+	grep -i 'image/' |
+	cut -d':' -f1

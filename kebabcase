@@ -1,0 +1,7 @@
+#!/usr/bin/awk -f
+
+{
+	gsub("-", "_");
+	gsub(" ", "-");
+	print(tolower($0));
+}

@@ -1,0 +1,10 @@
+#!/bin/sh
+# Author: ihsan, ihsanl[at]pm[dot]me
+
+# Quickly run a program using nix-shell without installing it.
+# (If the binary and program name are same)
+
+SUDO=
+if [ "$1" = "sudo" ]; then SUDO="sudo "; program="$2"; shift 1; else program=$1; fi
+shift 1; rest="$@"
+nix-shell -p "$program" --run "${SUDO}$program $rest"

@@ -1,0 +1,18 @@
+#!/bin/sh
+
+[ -d result ] &&
+	read -t 60 -p 'You already have a directory called "result".
+Mind if nix deletes it (60 secs and result will be gone) [<enter>/no]: ' \
+	answer;
+
+main() {
+	case $1 in
+		(-s|--sources|hard) nix flake update ~/dot;;
+	esac
+	darwin-rebuild switch --flake ~/dot && rm result
+}
+
+case "$answer" in
+	(""|y|yes) main;;
+	(*) errcho cancelled;;
+esac

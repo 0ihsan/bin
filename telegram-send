@@ -1,0 +1,18 @@
+#!/bin/sh
+
+. env.conf
+
+case $1 in
+	(-h|--help) printf 'usage\n\t\033[33mecho hello | ./notify\033[0m\n';exit 2;;
+esac
+
+send() {
+	curl -sSX POST -H 'Content-Type: application/json' \
+		-d '{"chat_id": "'"$TELEGRAM_CHANNEL_ID"'", "text": "'"$1"'"}' \
+		https://api.telegram.org/bot$TELEGRAM_BOT_TOKEN/sendMessage
+}
+
+while read line; do
+	while (send "$line" | grep -q '"ok":false'); do send "$line"; done
+done
+

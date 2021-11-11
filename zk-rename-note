@@ -1,0 +1,99 @@
+#!/bin/sh
+
+# deps: ~/bin/kebabcase
+# deps: nixpkgs#ripgrep
+# deps: nixpkgs#sd
+
+desc='\033[33mDESCRIPTION\033[0m
+    Rename the notes in a zettelkasten including both filenames and link
+    targets in the notes. Standard input should be the original (source) file
+    name.
+
+'
+usage='\033[33mUSAGE\033[0m
+    zk-rename-note [OPTIONS] \033[32m ( <new-name> | -t )\033[0m
+
+\033[33mOPTIONS
+    \033[32m-t\033[0m    Use the title of the note as new name.
+    \033[32m-d\033[0m    Dry run. Do not actually rename the file.
+    \033[32m-e\033[0m    File extension. Default: ".md"
+
+\033[33mEXAMPLES\033[0m
+
+    echo 1234abcd.md | zk-rename-note \033[32mlearn-rust\033[0m
+
+    echo 1234abcd.md | zk-rename-note \033[32m-t\033[0m
+'
+gettitle() { xargs rg -o '^# .*|^title: .*' | head -1 | sd '(^#|^title:) ' ''; }
+
+dry=false
+extension=md
+usetitle=false
+while getopts :dte: args; do case $args in
+	(d) dry=true;;
+	(t) usetitle=true;;
+	(e) extension="$OPTARG";;
+	(h) >&2 printf "${desc}$usage"; exit 0;;
+	([?]) >&2 printf "${desc}${usage}"; exit 1;;
+esac; done
+
+# >&2 echo '(reading filenames from stdin)'
+while read -r oldfname; do
+
+	if ! [ -f "$oldfname" ]; then
+
+		>&2 printf "\033[31merror: no such file: $oldfname\033[0m\n";
+		exit 1;
+
+	else
+
+		if $usetitle; then
+			title=$(echo "$oldfname" | gettitle)
+		else
+			if ! [ -n "$1" ]; then
+				>&2 printf "${desc}${usage}";
+				exit 1;
+			else
+				title="$1"
+			fi
+		fi
+		kebabed=$(echo "$title" | kebabcase)
+
+		# FIXME: WIP, remove punctuation from the title for kebabed filename.
+		targetfname="$(echo $kebabed | tr2eng-char | rg -o '[A-z0-9-_]*' |
+			paste -sd- | sd '^-*' '' | tr -s '-').$extension"
+
+		if [ "$targetfname" = "$oldfname" ]; then
+			continue;
+		elif [ -f "$targetfname" ]; then
+			>&2 printf "\033[31merror: could not rename: $oldfname\033[0m\n"
+			>&2 printf "\033[31merror: there is already a file named: $targetfname\033[0m\n"
+			exit 1
+		else
+			oldfname_wo_ext=$(echo $oldfname | sd '\.[^.]*$' '')
+
+			if $dry; then
+				>&2 echo "references will be renamed in these notes:\n"
+				{ rg -l "(\[\[\[?|<)${oldfname_wo_ext}(]]]?|>)" . |
+					sed 's/^/\t/g'; } >&2
+				>&2 printf "\nmv command will be run:\n\n\t"
+				>&2 printf "mv \033[35m$oldfname\033[0m \033[33m$targetfname\033[0m\n"
+
+			else # actually run (no dry)
+				rg -l "(\[\[\[?|<)${oldfname_wo_ext}(]]]?|>)" . |
+					xargs sd "(\[\[\[?|<)${oldfname_wo_ext}(]]]?|>)" "\${1}${kebabed}\${2}"
+				mv "$oldfname" "$targetfname"
+				>&2 echo "renaming the references in these notes:"
+				{ rg -l "(\[\[\[?|<)${oldfname_wo_ext}(]]]?|>)" . |
+					sed 's/^/\t/g'; } >&2
+				>&2 printf "\nrunning mv command:\n\n\t"
+				>&2 printf "mv \033[35m$oldfname\033[0m \033[33m$targetfname\033[0m\n"
+			fi
+
+			if $dry; then
+				>&2 printf '\n\033[32mDRY RUN IS ACTIVE NOTHING CHANGED.\033[0m\n'
+			fi
+
+		fi
+	fi
+done

@@ -1,0 +1,12 @@
+#!/bin/sh
+
+dir=$HOME/zk
+
+fd --base-directory "$dir" -e md -d1 -tf  |
+	xargs -I_ wc -l "$dir/_" |
+	sort -rn |
+	head -20 |
+	tail -n +1 |
+	sed 's/.md/.html/g' |
+	sed 's/^ *//g' |
+	cut -d' ' -f2

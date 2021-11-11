@@ -1,0 +1,34 @@
+#!/bin/sh
+
+# Requirements
+#
+# * Entries with only & exactly two postings.
+# * Accounts that ends with currency symbol. (asset:usdt)
+#
+
+# Input file:
+#
+#     2021-01-13 18:42:20 * sold my btc
+#         asset:crypto:binance.com:usdt             100 usdt @ 40000 btc
+#         asset:crypto:binance.com:btc
+#
+#     2021-01-13 18:42:20 * sold my btc fee
+#         expense:binance.com:fee                   0.1 usdt
+#         asset:crypto:binance.com:usdt
+#
+
+# Output:
+#
+#     btc:usdt
+#
+
+ledgerfile="$1"
+
+# get your past trading parities (unique)
+ledger -f "$ledgerfile" select account where not any\('account=~/fee/'\) |
+	grep -o '[^:]\+$' |
+	paste -d: - - |
+	tr -d ' ' |
+	sort -u |
+	sed 's/\([^:]*\):\([^:]*\)/\2:\1/g'
+

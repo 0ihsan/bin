@@ -1,0 +1,3 @@
+#!/bin/sh
+
+mdls -raw -name kMDItemUserTags "$@"

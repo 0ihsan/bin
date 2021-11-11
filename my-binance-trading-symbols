@@ -1,0 +1,8 @@
+#!/bin/sh
+
+ledgerfile=$HOME/log/money/trading/binance.ledger
+
+ledger -f "$ledgerfile" select payee where not \(payee=~"/fee/"\) |
+	cut -d'*' -f2 |
+	grep -ow '\w\+:\w\+' |
+	sort -u

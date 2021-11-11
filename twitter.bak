@@ -1,0 +1,51 @@
+#!/bin/sh
+
+# deps: usage, useragent, twitter-guest-token, twitter-bearer-token
+
+title='twitter'; desc='scraper'
+args='-s:<since_timestamp> ';
+usg() { usage "$title - $desc" "$title $args"; }
+
+while getopts :h args; do case $args in
+	(h) usg; exit 0;;
+	([?]) usg; exit 2;;
+esac; done
+
+header_auth="authorization: $(twitter-bearer-token)"
+header_bearer="x-guest-token: $(twitter-guest-token)"
+
+while read -r phrase; do
+	# url="https://api.twitter.com/1.1/users/show.json?screen_name=$user"
+	url="https://twitter.com/i/api/2/search/adaptive.json"
+	[ -n "$user" ] &&
+		curl -XPOST -sSGLA "$(useragent)" \
+			-H "$header_auth" -H "$header_bearer" "$url" \
+			-d include_profile_interstitial_type=1 \
+			-d include_blocking=1 \
+			-d include_blocked_by=1 \
+			-d include_followed_by=1 \
+			-d include_want_retweets=1 \
+			-d include_mute_edge=1 \
+			-d include_can_dm=1 \
+			-d include_can_media_tag=1 \
+			-d skip_status=1 \
+			-d cards_platform=Web-12 \
+			-d include_cards=1 \
+			-d include_ext_alt_text=true \
+			-d include_quote_count=true \
+			-d include_reply_count=1 \
+			-d tweet_mode=extended \
+			-d include_entities=true \
+			-d include_user_entities=true \
+			-d include_ext_media_color=true \
+			-d include_ext_media_availability=true \
+			-d send_error_codes=true \
+			-d simple_quoted_tweet=true \
+			-d q="$phrase" \
+			-d count=2 \
+			-d query_source=typed_query \
+			-d pc=1 \
+			-d spelling_corrections=1 \
+			-d ext=mediaStats,highlightedLabel \
+			-d f=live
+done

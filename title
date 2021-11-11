@@ -1,0 +1,5 @@
+#!/bin/sh
+
+# tr "-" " " |
+titlecase |
+	xargs -I"_" basename "_"

@@ -1,0 +1,2 @@
+#!/bin/sh
+while read line; do brain -wx "$line"; done

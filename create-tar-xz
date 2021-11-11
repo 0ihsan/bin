@@ -1,0 +1,3 @@
+#!/bin/sh
+
+echo 'tar -cJf <archive.tar.xz> <files>'

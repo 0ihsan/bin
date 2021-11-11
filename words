@@ -1,0 +1,2 @@
+#!/bin/sh
+tr -s '\t' | tr '\t' ' ' | tr -s ' ' | tr ' ' '\n'; echo

@@ -1,0 +1,32 @@
+#!/bin/sh
+
+PATH="/opt/local/bin:$PATH"; W2=840; H2=525;
+yabai -m query --windows --window |
+	jq -r "[$W2-.frame.w/2,$H2-.frame.h/2]|@tsv" | {
+		read -r tlx tly; yabai -m window --move abs:"$tlx":"$tly";
+	}
+
+# PERFORMANCE
+# ===========
+
+# v3
+# 0.076
+# 0.076
+# 0.077
+
+# v2
+# 0.093
+# 0.094
+# 0.094
+
+# v1
+#
+# 0.152
+# 0.141
+# 0.147
+
+# v0 (oldest version)
+#
+# 0.246
+# 0.265
+# 0.267

@@ -1,0 +1,17 @@
+#!/bin/sh
+
+# <swiftbar.hideAbout>true</swiftbar.hideAbout>
+# <swiftbar.hideRunInTerminal>true</swiftbar.hideRunInTerminal>
+# <swiftbar.hideLastUpdated>true</swiftbar.hideLastUpdated>
+# <swiftbar.hideDisablePlugin>true</swiftbar.hideDisablePlugin>
+# <swiftbar.hideSwiftBar>true</swiftbar.hideSwiftBar>
+
+echo 'ce | refresh=true'
+
+osascript -e 'tell application "System Events" # to tell process "Safari"
+    set activeApp to name of first application process whose frontmost is true
+    set frontWindow to the first window of application process activeApp
+    set position of the frontWindow to {36, 62}
+    set size of the frontWindow to {1368, 768}
+end tell' || true
+

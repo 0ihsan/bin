@@ -1,0 +1,13 @@
+#!/bin/sh
+
+# License: MIT
+# Description: shell script builder
+# Created at: 2020 Nov 29 20:09:39+UTC
+# Author: ihsan, ihsan[at]pm[dot]me, https://github.com/ihsanturk
+# NOTE: THIS SCRIPT IS PRE-ALPHA QUALITY AND MAY NOT WORK.
+
+deps: strp,echoerr,usage
+
+head /tmp/example.sh |
+	sed 's/dep\(endencie\)s:\(.*\)/\1/g' | strp
+	# grep -o '[^,]*'

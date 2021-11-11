@@ -1,0 +1,34 @@
+#!/bin/sh
+
+usagemessage='-l link [ -d output ]'
+usage() {
+	name=$(echo $0 | awk -F'/' '{ printf $NF}')
+	>&2 echo "usage: $name $usagemessage";
+}
+err() {
+	{ >&2 echo "`tput bold`specify`tput sgr0` an arxiv.org `tput bold`link`tput sgr0` with `tput setaf 2; tput bold`-l`tput sgr0` option"; exit 1; }
+}
+output=$HOME/Documents/
+while getopts :l:o: args; do
+	case $args in
+		(l)
+			link="$OPTARG";;
+		(o)
+			output="$OPTARG";;
+		(h)
+			usage; exit 0;;
+		([?])
+			usage; exit 1;;
+		(*)
+			usage; exit 1;;
+	esac
+done
+[[ "$link" == "" ]] && err
+link=$(echo $link | sed 's/abs/pdf/g'); link=$link.pdf
+echo $link | grep -q https:// || link="https://$link"
+echo $link | grep -q arxiv.org || err
+cd $output
+echo Downloading $link...
+filename=$(echo $link | awk -F'/' '{print $NF}')
+curl -Lso $filename $link && open $output/$filename || 
+	{ >&2 echo "`tput bold`FAIL`tput sgr0`"; exit 2; }

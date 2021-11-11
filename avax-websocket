@@ -1,0 +1,12 @@
+#!/bin/sh
+
+# <swiftbar.type>streamable</swiftbar.type>
+# <swiftbar.hideAbout>true</swiftbar.hideAbout>
+
+echo '{"method":"subscribe","id":"price","data":{"cryptoIds":[5805],"index":"detail"}}' |
+	websocat -n 'wss://stream.coinmarketcap.com/price/latest' |
+	jq --unbuffered .d.cr.p |
+	$HOME/bin/precision 3 |
+	sed -l 's/^/AVAX: $/g' |
+	sed -l 's/^/~~~\n/g'
+

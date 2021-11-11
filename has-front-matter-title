@@ -1,0 +1,36 @@
+#!/bin/sh
+
+usage() {
+	commandline="$(basename "$0") [ FILE(S) (or from stdin) ]"
+	>&2 printf "usage:\n\t\033[33m%s\033[0m\n" "$commandline";
+}
+case $1 in (-h|--help) usage; exit 0;; esac
+
+hfmt() {
+	if [ -f "$1" ]; then
+		c=$(head -c 1 "$1"); case $c in
+			(-|+)
+				if [ "$(grep -ce "^$c$c$c\$" "$1")" -ge "2" ]; then
+					[ "$c" = '-' ] && printf 'yaml' || printf 'toml'
+				else
+					printf 'null'
+				fi
+				;;
+			(*)
+				printf 'null'
+		esac
+	else
+		printf 'no such file'
+	fi
+	echo "	$1"
+}
+
+if [ -n "$1" ]; then
+	for filename in "$@"; do
+		hfmt "$filename"
+	done
+else
+	while read -r filename; do
+		hfmt "$filename"
+	done
+fi

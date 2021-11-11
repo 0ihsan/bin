@@ -1,0 +1,25 @@
+#!/bin/sh
+
+usagemessage='-s <sourcedir> -t <targetdirprefix> -e <sourceextension> -x <targetextension>'
+usage() { >&2 echo "usage: $(basename "$0") $usagemessage"; }
+
+while getopts :hs:t:e:x: args; do
+	case $args in
+		(s) SOURCEDIR="$OPTARG";;
+		(t) TARGETDIRPREFIX="$OPTARG";;
+		(e) SOURCEEXT="$OPTARG";;
+		(x) TARGETEXT="$OPTARG";;
+		(h) usage; exit 0;;
+		([?]) usage; exit 2;;
+	esac
+done
+
+if [ "$SOURCEDIR" = "" ] || [ "$TARGETDIRPREFIX" = "" ] || [ "$SOURCEEXT" = "" ] || [ "$TARGETEXT" = "" ]; then
+	usage; exit 2
+fi
+
+for i in "$SOURCEDIR"/*."$SOURCEEXT"; do
+	SRCPATH="$i"; TRGPATH="$TARGETDIRPREFIX$(echo "$i" | sed "s/$SOURCEEXT/$TARGETEXT/g")"
+	mv-exif "$SRCPATH" "$TRGPATH";
+	touch -r "$SRCPATH" "$TRGPATH";
+done

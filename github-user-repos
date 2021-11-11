@@ -1,0 +1,6 @@
+#!/bin/sh
+
+# deps: jq, curl
+
+[ -z "$1" ] && username=github || username=$1
+curl -s "https://api.github.com/users/$username/repos" | jq -r '.[].full_name'

@@ -1,0 +1,20 @@
+#!/usr/bin/awk -f
+
+BEGIN {
+	OFMT="%f";
+	if (ARGV[1] != "") {
+		print "Input shape:\n\tweight\tvalue\n\nExample:\n\t0.3\t40\n\t0.7\t50";
+		exit 0;
+	}
+}
+
+{
+	weights += $1;
+	values  += ($1 * $2);
+}
+
+END {
+	if (ARGC == 1) {
+		print values/weights;
+	}
+}

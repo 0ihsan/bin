@@ -1,0 +1,17 @@
+#!/bin/sh
+
+protocol() { sed 's/^http\(s\)\?//g'; }
+
+gitrepo() {
+	while read -r line; do
+		echo "https://github.com/$line"
+	done
+}
+
+case $1 in
+	(g|gr|gitrepo) gitrepo;;
+
+	(*) printf 'available sub commands are\n' \
+	           '\tgitrepo\n'
+	;;
+esac

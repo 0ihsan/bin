@@ -1,0 +1,16 @@
+#!/bin/sh
+
+	# -netdev user,id=net0,hostfwd=tcp::2222-:22 \
+	# -device e1000,netdev=net0 \
+sudo qemu-system-x86_64 \
+	-m 4G \
+	-machine type=q35,accel=hvf \
+	-display default,show-cursor=on \
+	-device intel-hda -device hda-duplex \
+	-device virtio-serial-pci \
+	-display cocoa,gl=es \
+	-usb \
+	-drive file=/dev/disk0s3,format=raw,if=virtio \
+	-smp 2 \
+	-vga std \
+	~/Downloads/archmbp-2020.09.17-x86_64.iso

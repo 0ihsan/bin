@@ -1,0 +1,36 @@
+#!/bin/sh
+
+                         #===========================#
+                         # USE `ledger bal` instead. #
+                         # USE `ledger bal` instead. #
+                         # USE `ledger bal` instead. #
+                         #===========================#
+
+
+# shit/old/dead code
+# title='balance - see balances of the accounts'
+
+# # func
+# printerr() { >&2 printf "$@"; }
+# errcho() { >&2 echo "$@"; }
+# empty() { test -z "$@"; }
+# usage() {
+# 	printerr "$1\nusage:
+# 	❯ $(tput setaf 3)"; shift; errcho "$*$(tput sgr0)";
+# }
+
+# # arg
+# ascurrency=usd
+# currency=$1; shift
+# bank=$HOME/Sync/data/money
+# usgmsg="<fromcurrency> [ -a:<ascurrency> ]"
+# while getopts :ha: args; do case $args in
+# 	(a) ascurrency="$OPTARG" ;;
+# 	(h) usage "$title" "$usgmsg"; exit 0 ;;
+# 	([?]) usage "$title" "$usgmsg"; exit 1 ;;
+# esac; done
+# empty "$currency" && { usage "$title" "$usgmsg"; exit 1; }
+
+# # action
+# tail -n1 "$bank/$currency/balance-as/$ascurrency" | cut -f2
+

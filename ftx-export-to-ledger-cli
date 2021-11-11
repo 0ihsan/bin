@@ -1,0 +1,3 @@
+#!/bin/sh
+
+tail -n +2 | tac | awk -f ~/bin/ftx-trades2ledger-cli.awk

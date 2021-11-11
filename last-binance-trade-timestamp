@@ -1,0 +1,21 @@
+#!/bin/sh
+
+# deps: ledger-date, date2timestamp, ledger
+
+ledgerfile="$HOME/log/money/trading/binance.ledger"
+
+while read -r symbol; do
+
+	lastdate=$(
+		ledger -f "$ledgerfile" print |
+			awk "/$symbol/" RS="\n\n" ORS="\n\n" |
+			ledger -f - print --tail 1 |
+			ledger-date |
+			date2timestamp
+	)
+
+	[ -n "$lastdate" ] || lastdate=0;
+
+	printf "%s\t%s\n" "$symbol" "$lastdate";
+
+done

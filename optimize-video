@@ -1,0 +1,25 @@
+#!/bin/sh
+
+# func
+errcho() { >&2 echo "$@"; }
+printerr() { >&2 printf "$@"; }
+usage() {
+printerr "optimize-video - using ffmpeg libx265\nusage:
+	❯ $(tput setaf 3)";shift;
+	errcho "optimize-video -i:<inputfile> -o:<outputfile> $(tput sgr0)"
+}
+
+# arg
+inputfile=default
+outputfile=default
+while getopts :i:o: args; do case $args in
+	(i) inputfile="$OPTARG" ;;
+	(o) outputfile="$OPTARG" ;;
+	(h) usage; exit 0 ;;
+	([?]) usage; exit 1 ;;
+esac; done
+[ -z "$inputfile" ] && { usage; exit 1; }
+[ -z "$outputfile" ] && { usage; exit 1; }
+
+# action
+ffmpeg -i "$inputfile" -vcodec libx265 -crf 28 "$outputfile"

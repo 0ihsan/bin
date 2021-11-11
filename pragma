@@ -1,0 +1,8 @@
+#!/bin/sh
+
+while read -r sourcename; do
+	sourcename_processed="$(echo "$sourcename" | tr '[:lower:]' '[:upper:]' | sed 's/$/_H/')"
+	printf '#ifndef %s\n' "$sourcename_processed"
+	printf '#define %s\n' "$sourcename_processed"
+	printf '\n#endif /* %s */\n' "$sourcename_processed"
+done
