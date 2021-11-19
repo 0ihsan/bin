@@ -5,7 +5,7 @@ from datetime import datetime
 import sys
 
 WIDTH  = 2*800
-HEIGHT = 1*800
+HEIGHT = int(1*800*1.5)
 FONT_SIZE = WIDTH/35
 GAP = 0.03
 
@@ -26,32 +26,32 @@ with ImageSurface(FORMAT_ARGB32, WIDTH, HEIGHT) as surface:
 
     context.select_font_face('Times New Roman', FONT_SLANT_NORMAL)
 
-    TEXT = 'title'
+    TEXT = sys.argv[1]
     context.set_font_size(FONT_SIZE)
     (x, y, w, h, dx, dy) = context.text_extents(TEXT)
     context.move_to((w-dx)+HEIGHT*GAP, h+HEIGHT*GAP)
     context.set_source_rgb(*zeronerange(hex2rgb("#3a94c5")))
     context.show_text(TEXT)
 
-    TEXT = 'subtitle'
+    TEXT = sys.argv[2]
     context.set_font_size(FONT_SIZE*.8)
     (x1, y1, w1, h1, dx1, dy1) = context.text_extents(TEXT)
     context.move_to((w-dx)+HEIGHT*GAP, h+h1+HEIGHT*GAP*2)
     context.set_source_rgba(*zeronerange(hexa2rgba("#3a94c5aa")))
     context.show_text(TEXT)
 
-    TEXT = datetime.now().strftime('%Y-%m-%d')
-    context.set_font_size(FONT_SIZE*.8)
-    (x2, y2, w2, h2, dx2, dy2) = context.text_extents(TEXT)
-    context.move_to((w-dx)+HEIGHT*GAP, h+h1+h2+HEIGHT*GAP*3)
-    context.set_source_rgba(*zeronerange(hexa2rgba("#3a94c5aa")))
-    context.show_text(TEXT)
+    # TEXT = datetime.now().strftime('%Y-%m-%d')
+    # context.set_font_size(FONT_SIZE*.8)
+    # (x2, y2, w2, h2, dx2, dy2) = context.text_extents(TEXT)
+    # context.move_to((w-dx)+HEIGHT*GAP, h+h1+h2+HEIGHT*GAP*3)
+    # context.set_source_rgba(*zeronerange(hexa2rgba("#3a94c5aa")))
+    # context.show_text(TEXT)
 
     data = []
     for line in sys.stdin:
         data.append(float(line.strip().strip('\\t')))
 
-    context.set_source_rgb(*zeronerange(hex2rgb("#e67e80")))
+    context.set_source_rgb(*zeronerange(hex2rgb("#DFA000")))
 
     len_data = len(data)
     stroke_width = (WIDTH/len_data)*.9

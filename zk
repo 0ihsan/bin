@@ -1,6 +1,6 @@
 #!/bin/sh
 
-zkdir="$HOME/zk/content"
+zkdir="$HOME/Documents/zettelkasten/content"
 editor="nvim"  # NOTE: {n,}vim arguments used in the following code. change
                #       those too!
 

@@ -11,7 +11,7 @@
 #--file-approach--@1595361762---------------------------------------------------
 # EDIT: this is the best approach i used this for months without any problems.
 
-file="${HOME}/Sync/log/life"
+file="${HOME}/icloud/log/life"
 
 if [ -n "$1" ]; then
 	esc=$(printf '\033')

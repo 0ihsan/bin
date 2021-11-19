@@ -1,6 +1,6 @@
 #!/bin/sh
 
-file=${HOME}/Sync/log/life
+file=~/icloud/log/life
 
 main() {
 	while read -r line; do
