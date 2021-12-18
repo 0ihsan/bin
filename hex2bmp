@@ -1,0 +1,10 @@
+#!/bin/sh
+
+while read -r hex; do
+
+  out=$(mktemp)
+  printf "424d1e000000000000001a0000000c0000000100010001001800%s00" \
+         "${hex:4:2}${hex:2:2}${hex:0:2}" | xxd -p -r > "$out"
+  echo "$out"
+
+done
