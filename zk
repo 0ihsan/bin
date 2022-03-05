@@ -1,8 +1,6 @@
 #!/bin/sh
 
 zkdir="$HOME/Documents/zettelkasten/content"
-editor="nvim"  # NOTE: {n,}vim arguments used in the following code. change
-               #       those too!
 
 new() {
 	# "$post" is a number that will be the next number (directory name) in
@@ -20,17 +18,18 @@ new() {
 
 search() {
 	if [ -n "$*" ]; then query="$* "; else query=""; fi
-	cd "$zkdir"; rg . -g'!content' |
-		fzf --select-1 --exit-0 -q "$query" --with-nth=-1 --print-query -d/
+	cd "$zkdir"; rg . -g'title' | sed 's/title://' |
+		fzf --select-1 --exit-0 -q "$query" --print-query -d/
+		# fzf --select-1 --exit-0 -q "$query" --with-nth=-1 --print-query -d/
 }
 
 openeditor() {
 	if [ -n "$1" ]; then
-		$editor +":se ft=markdown|:echo '$(cat "$1/title" 2>/dev/null)'" \
+		nvim +":se ft=markdown|:echo '$(cat "$1/title" 2>/dev/null)'" \
 			"$1/content" \
-			"$1/title" \
-			"$1/what" \
-			"$1/tag"
+			# "$1/title" \
+			# "$1/what" \
+			# "$1/tag"
 	fi
 }
 
@@ -49,7 +48,7 @@ case $1 in
 		found=$(cd "$zkdir"; rg . |
 			fzf --select-1 --exit-0 -q "$query" --with-nth=-1 --print-query -d/)
 
-		if [ "$(echo "$found" | wc -l)" = 2 ]; then  # found existing file
+		if [ "$(echo "$found" | wc -l | sed 's/ *//')" = 2 ]; then  # found existing file
 			post="$zkdir/$(echo "$found" | tail -1 | rev|cut -f2- -d/|rev)"
 			openeditor "$post"
 		fi
@@ -76,11 +75,10 @@ case $1 in
 
 		found=$(search "$*")
 
-		if [ "$(echo "$found" | wc -l)" = 2 ]; then  # found existing file
+		if [ "$(echo "$found" | wc -l | sed 's/ *//')" = 2 ]; then  # found existing file
 
 			post="$zkdir/$(echo "$found" | tail -1 | rev|cut -f2- -d/|rev)"
-			$editor +":se ft=markdown|:echo '$(cat "$1/title" 2>/dev/null)'" \
-				"$post/content"
+			openeditor "$post"
 
 		else  # create new
 

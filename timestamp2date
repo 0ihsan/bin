@@ -4,7 +4,7 @@
 # ( cat */date | timestamp2date; )  1.64s user 2.16s system 79% cpu 4.784 total
 # ( cat */date | timestamp2date; )  1.51s user 1.89s system 79% cpu 4.263 total
 # average: 4.359
-xargs -n1 -P4 -I'_' date -ud '@_' '+%Y-%m-%d %H:%M:%S %Z'
+xargs -n1 -P4 -I'_' gdate -ud '@_' '+%Y-%m-%d %H:%M:%S %Z'
 
 # # ( cat */date | timestamp2date; )  1.60s user 2.12s system 80% cpu 4.635 total
 # # ( cat */date | timestamp2date; )  1.46s user 1.96s system 81% cpu 4.179 total

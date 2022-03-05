@@ -5,7 +5,7 @@ file=~/icloud/log/life
 main() {
 	while read -r line; do
 		[ -n "$line" ] &&
-			count="$(wc -l < "$file")"
+			count="$(wc -l < "$file" | sed 's/ *//')"
 			printf "%s\t%s\t%s\n" \
 				"$count" \
 				"$(date +%s)" \

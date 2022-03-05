@@ -1,6 +1,6 @@
 #!/bin/sh
 
-PATH="/opt/local/bin:$PATH"; W2=840; H2=525;
+PATH="/opt/homebrew/bin:$PATH"; W2=840; H2=525;
 yabai -m query --windows --window |
 	jq -r "[$W2-.frame.w/2,$H2-.frame.h/2]|@tsv" | {
 		read -r tlx tly; yabai -m window --move abs:"$tlx":"$tly";

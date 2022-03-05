@@ -64,4 +64,5 @@ ffmpeg -i "$INPUTVIDEO" \
 		fi
 		mv "$INPUTVIDEO" "/tmp/last-original.$INPUTEXTEN" &&
 			mv "$OUTPUTVIDEO" "$(woextension $INPUTVIDEO).$TARGETEXTEN"
+		echo "original is backed up at /tmp/last-original.$INPUTEXTEN"
 	}

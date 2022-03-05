@@ -155,4 +155,4 @@ fi
 
 # list errors
 [ -e "$diffile" ] && { [ -s "$errfile" ] && cat "$errfile" || echo "All files have been successfully renamed/moved."; }
-cleanexit 0p
+cleanexit 0

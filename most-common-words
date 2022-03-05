@@ -1,3 +1,4 @@
 #!/bin/sh
-stopwords=$HOME/Sync/data/stop-words.txt
+
+stopwords=$HOME/icloud/data/stop-words.txt
 lower | words | count-uniq-words | sort -n | rg -vwf $stopwords

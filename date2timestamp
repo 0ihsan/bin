@@ -1,6 +1,6 @@
 #!/bin/sh
 
 while read -r line; do
-	echo "$line" | xargs -I{} date -d '{}' +%s
+	echo "$line" | xargs -I{} gdate -d '{}' +%s
 done
 

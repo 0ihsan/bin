@@ -9,7 +9,7 @@ showcolor() {
 
 while read -r line; do
 	case $line in
-		(normal)      showcolor 31;;
+		(normal)      showcolor 30;;
 		(red)         showcolor 31;;
 		(green)       showcolor 32;;
 		(yellow)      showcolor 33;;

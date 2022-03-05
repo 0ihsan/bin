@@ -1,3 +1,7 @@
 #!/bin/sh
 
+if [ -z "$1" ]; then
+	echo "    trt-radio \033[31m<n>\033[0m"
+	exit 1
+fi
 mpv "https://radio-trtradyo$1.live.trt.com.tr/master_128.m3u8"

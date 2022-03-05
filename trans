@@ -3389,7 +3389,7 @@ l(TK[text], "tk")
 return TK[text]
 }
 function googleInit() {
-HttpProtocol = "http://"
+HttpProtocol = "https://"
 HttpHost = "translate.googleapis.com"
 HttpPort = 80
 }
@@ -3751,7 +3751,7 @@ return r
 }
 BEGIN { provides("bing") }
 function bingInit() {
-HttpProtocol = "http://"
+HttpProtocol = "https://"
 HttpHost = "www.bing.com"
 HttpPort = 80
 }
@@ -4071,7 +4071,7 @@ exit 1
 function yandexInit() {
 genSID()
 YandexWebTranslate = "z5h64q92x9.net"
-HttpProtocol = "http://"
+HttpProtocol = "https://"
 HttpHost = "translate.yandex.net"
 HttpPort = 80
 }
@@ -4301,7 +4301,7 @@ return r
 }
 BEGIN { provides("apertium") }
 function apertiumInit() {
-HttpProtocol = "http://"
+HttpProtocol = "https://"
 HttpHost = "www.apertium.org"
 HttpPort = 80
 }
@@ -5690,4 +5690,4 @@ Mort Yao <soi@mort.ninja>.
 EOF
 export TRANS_MANPAGE
 export TRANS_BUILD=release
-gawk -f <(echo -E "$TRANS_PROGRAM") - "$@"
+/opt/homebrew/bin/gawk -f <(echo -E "$TRANS_PROGRAM") - "$@"

@@ -1,10 +1,23 @@
-#!/bin/sh
+#!/usr/bin/env python3
 
-while read -r hex; do
+import sys
+import tempfile
+import functional
 
-  out=$(mktemp)
-  printf "424d1e000000000000001a0000000c0000000100010001001800%s00" \
-         "${hex:4:2}${hex:2:2}${hex:0:2}" | xxd -p -r > "$out"
-  echo "$out"
+import color
 
-done
+hex2bmp = functional.pipe(
+        color.revhex,
+        "424d1e000000000000001a0000000c0000000100010001001800{}00".format,
+        bytearray.fromhex)
+
+def main(hexrgb):
+    "creates temp file writes bmp data to it and prints the out file path"
+    (_, path) = tempfile.mkstemp(suffix='.bmp')
+    with open(path, 'wb') as out:
+        out.write(hex2bmp(hexrgb))
+        out.close()
+        print(path)
+
+if __name__ == '__main__':
+    tuple(map(main, sys.stdin))

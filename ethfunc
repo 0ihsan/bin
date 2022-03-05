@@ -1,7 +1,13 @@
 #!/usr/bin/env python3
 
+import re
 from sys import stdin
 from sha3 import keccak_256
+
+ethtype = {
+    "uint256": lambda x: format(x,'x'),
+    "address": lambda x: x.zfill(64)
+}
 
 def fixedlen(x):
     return x.zfill(64)
@@ -21,6 +27,9 @@ if __name__ == '__main__':
     for line in stdin:
         prototype, params = line.split(')', 1)
         prototype += ')'
-        function = f(prototype)
-        params = params[1:-2].replace(', ', ',').replace("'", '').split(',')
-        print(function(*params))
+        typestr = re.sub(r'^\w+', '', prototype).replace('(','').replace(')','')
+        types = typestr.split(',')
+        print(types)
+        # function = f(prototype)
+        # params = params[1:-2].replace(', ', ',').replace("'", '').split(',')
+        # print(function(*params))

@@ -12,7 +12,7 @@ done
 
 [ -z "$usercommand" ] || usercommand="| $usercommand"
 
-awk 'BEGIN { FS=OFS="'$delim'" }
+gawk 'BEGIN { FS=OFS="'$delim'" }
 {
 	tmp = "echo "$'$field'" '"$usercommand"'"
 	tmp | getline processed
