@@ -1,0 +1,6 @@
+#!/usr/bin/env python3 -S
+
+import sys
+
+for line in sys.stdin:
+    print(format(int(line.strip()), 'x'))

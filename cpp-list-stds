@@ -1,0 +1,8 @@
+#!/bin/sh
+
+$(g++-11 -print-prog-name=cc1) --help |
+   rg std                             |
+   words                              |
+   rg '^-'                            |
+   rg -v gnu                          |
+   sort -n

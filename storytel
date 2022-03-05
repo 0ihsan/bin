@@ -1,0 +1,15 @@
+#!/bin/sh
+
+if [ -z "$1" ]; then
+
+	>&2 echo 'storytel <bookid>'
+	exit 1
+
+else
+
+	curl -sS "https://www.storytel.com/api/getBookInfoForContent.action?bookId=$1" \
+	-H 'Accept-Language: en-GB,en;q=0.9' \
+	-H 'Host: www.storytel.com' \
+	-H 'Cookie: request_locale=tr;'
+
+fi

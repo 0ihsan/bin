@@ -1,0 +1,25 @@
+#!/usr/bin/env python3
+"get google sheet to csv format"
+
+import sys
+import urllib.parse
+
+import net
+import functional
+
+google_sheet_to_csv = functional.pipe(
+    str.strip,
+    lambda x: x.replace('/edit#', '/export?format=tsv&').split('&')[0],
+    net.get,
+)
+
+main = functional.pipe(
+    google_sheet_to_csv,
+    functional.stdout,
+)
+
+if __name__ == '__main__':
+    try:
+        tuple(map(main, sys.stdin))
+    except KeyboardInterrupt:
+        sys.exit(0)

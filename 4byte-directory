@@ -1,0 +1,17 @@
+#!/bin/sh
+
+if [ "$1" = "-h" ]; then
+	>&2 echo "❯ echo \033[31m<hex>\033[0m | $(basename $0)"
+	exit 1
+else
+	while read -r hex; do
+		resp=$(curl -sS \
+		     "https://www.4byte.directory/api/v1/signatures/?hex_signature=$hex")
+		if (which -s jq); then
+			echo $resp | jq
+		else
+			echo $resp
+		fi
+	done
+fi
+

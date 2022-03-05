@@ -1,0 +1,6 @@
+#!/bin/sh
+
+curl -sS https://hackage.haskell.org/packages/names |
+	pup '.packages li' | w3m -dump -T text/html > /tmp/haskell.packages
+
+echo /tmp/haskell.packages

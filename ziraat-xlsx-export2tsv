@@ -1,0 +1,12 @@
+#!/bin/sh
+
+cmd='unzip -p _ xl/worksheets/sheet.xml |
+xpath -q -e "x:worksheet/x:sheetData//x:v//text()" |
+tail -n +13 |
+ghead -n -6 |
+paste - - - - -'
+
+exa -1 *.xlsx |
+	xargs -I_ sh -c "$cmd" |
+	sed 's/^\(..\)\.\(..\)\.\(....\)/\3-\2-\1/g' |
+	sort -n

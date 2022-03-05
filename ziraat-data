@@ -1,0 +1,14 @@
+#!/bin/sh
+
+url='https://www.ziraatbank.com.tr/tr/_layouts/15/Ziraat/HomePage/Ajax.aspx/GetZiraatVerileri'
+
+curl -sSH 'content-type: core/json' "$url" |
+	jq .d.Data.Html |
+	pup ul |
+	w3m -T text/html -dump |
+	sed '/^\s*$/d;s/^ * • //g' |
+	paste - - - - - |
+	cut -f1,3,5 |
+	sed 's/AMERIKAN DOLARI/usdtry/g
+	     s/EURO/eurtry/g
+	     s/A02 ALTIN (1000\/1000)/a02try/g'

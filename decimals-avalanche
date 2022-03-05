@@ -1,0 +1,16 @@
+#!/bin/sh
+
+if [ $# -lt 1 ]; then
+	echo $(basename $0) \033[31m<account>\033[0m
+	exit 1
+else
+
+fi
+
+d0='{"jsonrpc":"2.0","id":1,"method":"eth_call","params":[{"from":"0x00000000000'
+d1='00000000000000000000000000000","data":"0x313ce567","to":"''%s"},"%s"]}'
+
+rpc='https://api.avax.network/ext/bc/C/rpc'
+curl -sSH'content-type:application/json' $rpc \
+	--data-raw $(printf "$template" $wallet_address $token) |
+	jq -r .result | hex2dec

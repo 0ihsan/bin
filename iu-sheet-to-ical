@@ -1,0 +1,106 @@
+#!/usr/bin/env python3
+
+import sys
+import locale
+from datetime import datetime as dt
+from datetime import timezone as tz
+from datetime import timedelta as td
+
+from functools import reduce, partial
+pipe=lambda*funcs:reduce(lambda f,g:lambda x:f(g(x)),reversed(funcs),lambda x:x)
+stdout=lambda x:sys.stdout.write(str(x)+'\n')
+
+parsedate     = lambda date: dt.strptime(date, '%d %B %Y %A')
+serializedate = lambda date: date.strftime('%Y%m%d')
+parsetime     = lambda date: dt.strptime(date.replace('.',':'), '%d %B %Y %A %H:%M %Z')
+serializetime = lambda date: date.astimezone(tz.utc).strftime('%Y%m%dT%H%M%SZ')
+
+
+def makecalendar(events: str):
+    return '\n'.join([
+        'BEGIN:VCALENDAR',
+        'METHOD:PUBLISH',
+        'VERSION:2.0',
+        events,
+        'END:VCALENDAR'])
+
+
+def maketitle(fields):
+    group   = fields[0]
+    subject = fields[4]
+    lecture = fields[6] if len(fields) > 6 else ''
+
+    group = group.replace('A GRUBU', '(A)')
+    group = group.replace('B GRUBU', '(B)')
+    group = group.replace('A + B', '(A+B)')
+
+    if lecture and len(fields) < 7:
+        title = ' • '.join((subject,lecture,group))
+    else:
+        title = ' • '.join((subject,group))
+
+    return 'SUMMARY:'+title
+
+
+def makedate(fields):
+    day   = fields[1]
+    start = parsetime(f'{day} {fields[2]} +03') if fields[2] else ''
+    end   = parsetime(f'{day} {fields[3]} +03') if fields[3] else ''
+    if not start:
+        return 'DTSTART;VALUE=DATE:'+serializedate(parsedate(day))
+    elif not end:
+        end = start + td(hours=1)
+        return '\n'.join(('DTSTART:'+serializetime(start),
+                          'DTEND:'  +serializetime(end)))
+    else:
+        return '\n'.join(('DTSTART:'+serializetime(start),
+                          'DTEND:'  +serializetime(end)))
+
+
+def makelocation(fields):
+    lecture = fields[6] if len(fields) > 6 else ''
+    location = fields[7] if len(fields) > 7 else lecture
+    return 'LOCATION:'+location if location else None
+
+
+def makedescription(fields):
+    instructor = fields[5] if len(fields) > 5 else ''
+    return 'DESCRIPTION:'+instructor if instructor else None
+
+
+def tsv2ical(line):
+    locale.setlocale(locale.LC_TIME, 'tr_TR')
+    fields = line.split('\t')[1:]
+    if any(fields[0].strip()) and len(fields) > 3:
+        return '\n'.join(filter(None, (
+            'BEGIN:VEVENT',
+            maketitle(fields),
+            makedate(fields),
+            makelocation(fields),
+            makedescription(fields),
+            'END:VEVENT',
+        )))
+
+
+makeevents = pipe(
+    str.strip,
+    tsv2ical,
+)
+
+
+iu_sheet_to_ical = pipe(
+    makeevents,
+    lambda x: makecalendar(x) if x is not None else None,
+)
+
+main = pipe(
+    iu_sheet_to_ical,
+    lambda x: stdout(x) if x is not None else None,
+)
+
+if __name__ == '__main__':
+
+    try:
+        tuple(map(main, sys.stdin))
+    except BrokenPipeError or KeyboardInterrupt:
+        sys.exit(0)

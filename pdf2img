@@ -1,0 +1,19 @@
+#!/bin/sh
+
+if [ -z $1 ]; then
+	echo '❯ pdf2img \033[31m<file.pdf>\033[0m';
+	exit 1;
+fi
+
+
+convert \
+	-density 500 \
+	-background '#2B3339' \
+	-fill '#D3C6AA' \
+	-opaque black \
+	-alpha remove \
+	-fuzz 80% \
+	"$1" \
+	PNG32:/tmp/out.png
+
+echo /tmp/out-*.png | tr ' ' '\n'

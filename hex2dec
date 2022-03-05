@@ -1,0 +1,13 @@
+#!/usr/bin/env python3 -S
+
+import sys
+import util
+import functional
+
+if __name__ == '__main__':
+    list(map(functional.pipe(
+        str.strip,
+        lambda x: x.replace('0x',''),
+        util.hex_to_dec,
+        functional.stdout,
+    ), sys.stdin))
