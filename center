@@ -1,2 +1,5 @@
 #!/bin/sh
+
+# center text in args
+
 printf "%*s\n" $(( ( $(echo $* | wc -c ) + $(tput cols) ) / 2 )) "$*"
