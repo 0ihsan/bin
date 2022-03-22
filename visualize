@@ -40,7 +40,7 @@ case $1 in
 	;;
 
 	(line)      # simple line chart
-		gnuplot -p -e "@pngdark; plot \"$FILE\" using 1:2 with lines ls 25"
+		gnuplot -p -e "@pngdark; plot \"$FILE\" using 1:2 with lines ls 25 lw 3"
 	;;
 
 	(candle)    # input is shaped like "time  open  low  high  close  volume"
