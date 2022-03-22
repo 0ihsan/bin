@@ -1,6 +1,7 @@
 #!/bin/sh
 
-while read -r line; do
-	printf ".EQ\n%s\n.EN\n" "$(echo $line | sed 's/^\s\+//g')" |
-		eqn -TMathML | grep '<math>';
-done
+# deps: groff
+
+sed 's/^/.EQ\n/g;s/$/\n.EN\n/g' |
+	eqn -T MathML |
+	grep '<math>'
