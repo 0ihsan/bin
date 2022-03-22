@@ -19,6 +19,6 @@ send_request() {
 	done
 }
 
-send_request | 
+# send_request | 
 
-fee=(($gasUsed * 0.000000001 * 470))
+# fee=(($gasUsed * 0.000000001 * 470))
