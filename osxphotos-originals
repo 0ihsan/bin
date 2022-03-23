@@ -7,6 +7,9 @@
 #          License:        MIT                                     │
 #          ╰───────────────────────────────────────────────────────╯
 
+# NOTE: DEPRECATED: osxphotos implemented this feature. use it instead:
+# https://github.com/RhetTbull/osxphotos/commit/5f2d401048850fd68f31b37a7e71abc11ca80dc5
+
 usage() {
 echo '
 	'$(basename $0)' -i <path/to/exported> [-s <suffix> ] [ -d ] [ -o ] [ -h ]
