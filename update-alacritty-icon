@@ -1,4 +1,18 @@
 #!/bin/sh
 
-iconutil -c icns "$HOME/Pictures/Alacritty.iconset" \
-	-o /Applications/MacPorts/Alacritty.app/Contents/Resources/alacritty.icns
+# iconutil -c icns "$HOME/Pictures/Alacritty.icns" \
+# 	-o /Applications/MacPorts/Alacritty.app/Contents/Resources/alacritty.icns
+
+if [ -f ~/Pictures/Alacritty.icns ]; then
+	file=/Applications
+	if [ -d MacPorts/Alacritty.app ]; then
+		file=$file/MacPorts/Alacritty.app/Contents/Resources/
+	elif [ -d /Applications/Alacritty.app ]; then
+		file="$file/Alacritty.app/Contents/Resources/alacritty.icns"
+	else
+		echo "\033[31m alacritty not found in /Applications \033[0m"
+		exit 1
+	fi
+	mv $file /tmp/
+	mv ~/Pictures/Alacritty.icns $(dirname $file)/alacritty.icns
+fi

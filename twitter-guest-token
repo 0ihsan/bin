@@ -1,6 +1,4 @@
 #!/bin/sh
 
-# deps: usage
-
 curl -sA "$(useragent)" https://twitter.com |
 	grep -o 'gt=\d\+' | grep -o '[0-9]\+'
