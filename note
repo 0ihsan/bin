@@ -1,6 +1,6 @@
 #!/bin/sh
 
-file=~/icloud/log/life
+file=~/et/log/life
 
 main() {
 	while read -r line; do
@@ -15,7 +15,14 @@ main() {
 	done;
 }
 
+# fuckoff argument means *don't use any dependencies*
 if ! [ "$1" = "fuckoff" ]; then
-if which -s rlwrap; then rlwrap "$0" fuckoff; else main; fi else main;
+	if which -s rlwrap; then
+		rlwrap "$0" fuckoff;
+	else
+		main;
+	fi
+else
+	main;
 fi
 
