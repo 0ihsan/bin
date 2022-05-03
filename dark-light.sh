@@ -7,33 +7,40 @@
 # # <swiftbar.hideSwiftBar>true</swiftbar.hideSwiftBar>
 # echo 'dl | refresh=true'
 
+# desktop color wallpaper
 lightbg='#A7C080'
 lightbg='#CDA863'
+lightbg='#FAF4ED'
+lightbg='#347773'
+lightbg='#E8BF44'
 darkbg='#2D3339'
 darkbg='#16171F'
+darkbg='#347773'
+darkbg='#111111'
 
 bg=
 target=
+shouldbedark=
 if defaults read -g AppleInterfaceStyle | grep -q Dark; then
 	target=light
+	shouldbedark=false
+	kittytheme='Rosé Pine Dawn'
 	bg="$lightbg"
 else
 	target=dark
+	shouldbedark=true
+	kittytheme='zenwritten_dark'
 	bg="$darkbg"
 fi
 
-
 osascript -e 'tell application "System Events"
-	if dark mode of appearance preferences is false then
-		set dark mode of appearance preferences to true
-	else
-		set dark mode of appearance preferences to false
-	end if
+	set dark mode of appearance preferences to '$shouldbedark'
 end tell'
 
-sed -i '' "s/^colors: \*[darklight]*$/colors: *$target/" /Users/ihsan/.config/alacritty/color.yml
-
-which -s kitty && kitty @ set-colors --all --configured "/Users/ihsan/.config/kitty/everforest-$target-kitty.conf" 2>&1 >/tmp/kitt.log
-m wallpaper $(echo "$bg" | ~/bin/hex2bmp)
+which -s kitty && kitty +kitten themes --reload-in=all "$kittytheme"
+# sed -i '' "s/^colors: \*[darklight]*$/colors: *$target/" /Users/ihsan/.config/alacritty/color.yml
 
 for pid in $(pgrep {n,}vim); do kill -SIGUSR1 $pid; done
+
+m wallpaper $(echo "$bg" | ~/bin/hex2bmp)
+
