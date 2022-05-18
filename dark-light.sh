@@ -16,7 +16,7 @@ lightbg='#E8BF44'
 darkbg='#2D3339'
 darkbg='#16171F'
 darkbg='#347773'
-darkbg='#111111'
+darkbg='#111222'
 
 bg=
 target=
@@ -29,18 +29,19 @@ if defaults read -g AppleInterfaceStyle | grep -q Dark; then
 else
 	target=dark
 	shouldbedark=true
-	kittytheme='zenwritten_dark'
+	kittytheme='Gruvbox Dark'
 	bg="$darkbg"
 fi
 
-osascript -e 'tell application "System Events"
-	set dark mode of appearance preferences to '$shouldbedark'
-end tell'
+osascript -e "tell application \"System Events\"
+	set dark mode of appearance preferences to $shouldbedark
+end tell" &
 
-which -s kitty && kitty +kitten themes --reload-in=all "$kittytheme"
+which -s kitty && kitty +kitten themes --reload-in=all "$kittytheme" &
 # sed -i '' "s/^colors: \*[darklight]*$/colors: *$target/" /Users/ihsan/.config/alacritty/color.yml
 
-for pid in $(pgrep {n,}vim); do kill -SIGUSR1 $pid; done
+for pid in $(pgrep {n,}vim); do kill -SIGUSR1 $pid; done &
 
-m wallpaper $(echo "$bg" | ~/bin/hex2bmp)
+# m wallpaper $(echo "$bg" | ~/bin/hex2bmp) &
+m wallpaper ~/code/dotfiles--0ihsan/noised-$target.jpg
 
