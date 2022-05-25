@@ -1,0 +1,150 @@
+#!/usr/bin/env python3
+"display an evm transaction nicely"
+
+# author: ihsan
+# license: MIT
+
+# Copyright 2022 0ihsan <ihsanl [at] pm [dot] me>
+#
+# Permission is hereby granted, free of charge, to any person obtaining a copy
+# of this software and associated documentation files (the "Software"), to deal
+# in the Software without restriction, including without limitation the rights
+# to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+# copies of the Software, and to permit persons to whom the Software is
+# furnished to do so, subject to the following conditions:
+#
+# The above copyright notice and this permission notice shall be included in all
+# copies or substantial portions of the Software.
+#
+# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+# IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+# FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+# AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+# LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+# OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+# SOFTWARE.
+
+import sys
+import json
+import urllib.parse
+import urllib.request
+import functools as ft
+
+RPC = 'https://bsc-dataseed.binance.org/'
+RPC = 'https://api.avax.network/ext/bc/C/rpc'
+
+RED = '\033[31m'
+BRD = '\033[1;31m'
+BGR = '\033[1;32m'
+BLU = '\033[34m'
+GRN = '\033[32m'
+YLW = '\033[33m'
+BYL = '\033[1;33m'
+RST = '\033[0m'
+IND = ' '*10
+
+hex2dec = ft.partial(int, base=16)
+
+def splitn(n: int):
+    "return `string slicer by n` function"
+    return lambda string: [string[i:i+n] for i in range(0, len(string), n)]
+
+
+def fourbytedir(method):
+    req = urllib.request.Request(
+       f'https://www.4byte.directory/api/v1/signatures/?hex_signature={method}')
+    with urllib.request.urlopen(req) as response:
+        resjson = json.loads(response.read().decode())
+        if resjson['count'] > 0:
+            return f'{resjson["results"][0]["text_signature"]}'
+        return ''
+
+
+def typer(typ):
+    if typ == 'address':
+        return lambda x: '0x'+x[-40:]
+    elif typ.startswith('uint') or typ.startswith('int') or typ == 'bool':
+        return hex2dec
+    else:
+        return lambda x: x
+
+def display_parsed(signature, n=64):
+    if not any(signature):
+        return 'unknwon method'
+    params = signature.split(',')
+    params[0] = params[0].split('(')[1]
+    params[-1] = params[-1].replace(')','')
+    # return lambda data: [typer(p)(d) for p,d in zip(params, splitn(64)(data))]
+    def r(data):
+        finish_early = 0
+        datalen = len(splitn(n)(data))
+        for i, field in enumerate(splitn(n)(data)): #range(0, len(data), n):
+             if i == datalen - finish_early:
+                break
+             typ = params[i]
+             if '[]' in typ:
+                typ           = typ.replace('[]','')
+                arrpos        = hex2dec(field)*2
+                arr           = splitn(n)(data[arrpos:])
+                arrlen        = hex2dec(arr[0])
+                arrvals       = arr[1:arrlen+1]
+                finish_early  += arrlen+1
+                print(f'{typ+"[]":>13}: {BLU}')
+                for val in arrvals:
+                    print(f'{" "*15}{typer(typ)(val)}')
+                print(RST)
+             else:
+                 print(f'{typ:>13}: {BLU}{typer(typ)(field)}{RST}')
+    return r
+
+def print_tx(txjson):
+    if 'result' not in txjson:
+        return f'{BRD}tx not found{RST}'
+    t = json.loads(txjson)['result']
+    inputdata = t["input"][10:]
+    inputlist = splitn(64)(t["input"][10:])
+
+    print(f'''
+    from: {RED}{t["from"]}{RST}
+                            ↓
+      to: {GRN}{t["to"]}{RST}
+   value: {YLW}{hex2dec(t["value"])}{RST}
+
+     gas: {hex2dec(t["gas"])}
+gasPrice: {hex2dec(t["gasPrice"])}
+
+  method: {t["input"][:10]}
+
+   input: '''+f'\n{IND}'.join(inputlist))
+
+    # decode if 4byte directory answers from hex
+    signature = fourbytedir(t["input"][:10])
+    if not any(signature):
+        return
+    print(f'\033[{len(inputlist)+2}A\033[22G- {BYL}{signature}{RST}')
+    print(f'\033[{len(inputlist)}B\n decoded:\n')
+    display_parsed(signature)(inputdata)
+
+
+def format_tx_receipt(receiptjson):
+    return receiptjson['logs']
+
+
+def main(txhash):
+    d = {
+      "jsonrpc":"2.0","id": 1,
+      "method":"eth_getTransactionByHash",
+      # "method":"eth_getTransactionReceipt"
+      "params":[txhash]
+    }
+    req = urllib.request.Request(RPC,
+                                 data=bytes(json.dumps(d), encoding='utf-8'),
+                                 headers={'content-type':'application/json'})
+    with urllib.request.urlopen(req) as response:
+        response = response.read().decode()
+
+    print_tx(response)
+
+if __name__ == '__main__':
+    for txhash in sys.stdin:
+        main(txhash.strip())
