@@ -56,7 +56,8 @@ def fourbytedir(method):
     with urllib.request.urlopen(req) as response:
         resjson = json.loads(response.read().decode())
         if resjson['count'] > 0:
-            return f'{resjson["results"][0]["text_signature"]}'
+            results = sorted(resjson['results'], key=lambda x: x['id'])
+            return f'{results[0]["text_signature"]}'
         return ''
 
 
